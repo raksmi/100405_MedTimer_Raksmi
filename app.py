@@ -692,7 +692,7 @@ def load_user_data(username):
                 'color': med[7],
                 'instructions': med[8],
                 'taken_today': bool(med[9]),
-                'taken_times': []
+                'taken_times': [],
 
                 'created_at': med[10]
             })
@@ -3076,6 +3076,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
