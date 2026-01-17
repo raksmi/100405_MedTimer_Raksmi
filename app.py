@@ -1591,6 +1591,7 @@ def patient_signup_page():
         if st.session_state.signup_step == 1:
             st.markdown("<h3 style='color: #ffffff;'>### 👤 Basic Information</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", value=st.session_state.signup_data.get('username', ''))
+            name = st.text_input("Full Name",value=st.session_state.signup_data.get('name', ''))
             age = st.number_input("Age", min_value=1, max_value=120, value=st.session_state.signup_data.get('age', 25))
             password = st.text_input("Password", type="password", value=st.session_state.signup_data.get('password', ''))
             
@@ -3050,3 +3051,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
