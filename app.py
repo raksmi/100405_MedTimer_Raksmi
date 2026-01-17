@@ -1950,8 +1950,7 @@ def dashboard_overview_tab(age_category):
         if st.session_state.sound_enabled:
             play_reminder_sound()
         for med in due_meds:
-        st.markdown(
-        f"""
+            st.markdown(f"""
         <div class='reminder-item'>
             <strong>🔔 REMINDER NOW:</strong>
             {med['name']} ({med['dosageAmount']}) at {format_time(med['time'])}
@@ -3094,6 +3093,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
