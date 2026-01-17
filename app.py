@@ -1947,21 +1947,40 @@ def dashboard_overview_tab(age_category):
     if due_meds:
         if st.session_state.sound_enabled:
             play_reminder_sound()
+    for med in due_meds:
+    st.markdown(
+        f"""
+        <div class='reminder-item'>
+            <strong>🔔 REMINDER NOW:</strong>
+            {med['name']} ({med['dosageAmount']}) at {format_time(med['time'])}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    if st.button(
+        "✓ Take Now",
+        key=f"take_due_{med['id']}_{med['time']}",
+        use_container_width=True
+    ):
+        dose_time = med['time']
+
+        for m in st.session_state.medications:
+            if m['id'] == med['id']:
+                if dose_time not in m.get('taken_times', []):
+                    m['taken_times'].append(dose_time)
+
+                # OPTIONAL: mark fully taken if all doses done
+                all_times = m.get('reminder_times', [m.get('time')])
+                if set(m['taken_times']) == set(all_times):
+                    m['taken_today'] = True
+
+                update_medication_history(m['id'], 'taken')
+                update_adherence_history()
+                st.success(f"{m['name']} at {format_time(dose_time)} marked as taken!")
+                st.rerun()
+
         
-        for med in due_meds:
-            st.markdown(f"""
-            <div class='reminder-item'>
-                <strong>🔔 REMINDER NOW:</strong> {med['name']} ({med['dosageAmount']}) at {format_time(med['time'])}
-            </div>
-            """, unsafe_allow_html=True)
-        if st.button("✓ Take Now", key=f"take_due_{med['id']}", use_container_width=True):
-            for m in st.session_state.medications:
-                if m['id'] == med['id']:
-                    dose_time = med['time']
-                    for m in st.session_state.medications:
-                    if m['id'] == med['id']:
-                    if dose_time not in m.get('taken_times', []):
-            m['taken_times'].append(dose_time)
 
         # OPTIONAL: mark fully taken only if ALL doses are done
         all_times = m.get('reminder_times', [m.get('time')])
@@ -3075,6 +3094,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
