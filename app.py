@@ -1985,22 +1985,6 @@ if due_meds:
                     st.rerun()
 else:
     st.info("🎉 No medications due right now!")
-
-        
-
-        # OPTIONAL: mark fully taken only if ALL doses are done
-        all_times = m.get('reminder_times', [m.get('time')])
-        if set(m['taken_times']) == set(all_times):
-            m['taken_today'] = True
-
-        update_medication_history(m['id'], 'taken')
-        update_adherence_history()
-        st.success(f"{m['name']} at {dose_time} marked as taken!")
-        st.rerun()
-
-    else:
-        st.info("No medications due right now.")
-    
     
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("<h4 style='color: #ffffff;'> # 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
@@ -3096,6 +3080,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
