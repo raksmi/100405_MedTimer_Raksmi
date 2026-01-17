@@ -1945,7 +1945,7 @@ def dashboard_overview_tab(age_category):
     
   
     due_meds = check_due_medications(st.session_state.medications)
-    if due_meds:
+if due_meds:
     if st.session_state.sound_enabled:
         play_reminder_sound()
 
@@ -3096,6 +3096,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
