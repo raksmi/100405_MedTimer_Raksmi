@@ -2049,7 +2049,7 @@ def dashboard_overview_tab(age_category):
                 
                 col1, col2 = st.columns([3, 1])
                 with col2:
-                    if st.button("\u2713 Take Now", key=f"take_upcoming_{med['id']}", use_container_width=True):
+                    if st.button("\u2713 Take Now", key=f"take_upcoming_{med['id']}_{med['time']}", use_container_width=True):
                         for m in st.session_state.medications:
                             if m['id'] == med['id']:
                                 m['taken_today'] = True
@@ -3051,4 +3051,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
