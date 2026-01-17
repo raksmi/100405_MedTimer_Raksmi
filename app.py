@@ -441,8 +441,7 @@ def check_due_medications(medications):
                     
                     if time_diff <= 5 and med not in due_medications:
                         due_medications.append(med)
-    
-    return due_medications
+                        return due_medications
 
 def calculate_adherence(medications):
     """Calculate medication adherence percentage (dose-based)"""
@@ -3075,6 +3074,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
