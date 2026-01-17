@@ -1984,13 +1984,11 @@ def dashboard_overview_tab(age_category):
                         f"{m['name']} at {format_time(dose_time)} marked as taken!"
                     )
                     st.rerun()
-else:
-    st.info("🎉 No medications due right now!")
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<h4 style='color: #ffffff;'> # 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
-    
-    upcoming_count = 0
+        else:
+          st.info("🎉 No medications due right now!")
+          st.markdown("<br>", unsafe_allow_html=True)
+          st.markdown("<h4 style='color: #ffffff;'> # 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
+          upcoming_count = 0
     for med in upcoming[:5]: 
         med_time = datetime.strptime(med['time'], "%H:%M")
         now = datetime.now()
@@ -3081,6 +3079,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
