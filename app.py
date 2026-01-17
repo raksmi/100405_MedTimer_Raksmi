@@ -1484,7 +1484,7 @@ def patient_login_page():
         tab1, tab2 = st.tabs(["🔒 Password", "📧 Email"])
         
         with tab1:
-            st.markdown("<h3 style='color: #ffffff;'>### Username & Password Login</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  Username & Password Login</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", key="login_username")
 
 
@@ -1540,7 +1540,7 @@ def caregiver_login_page():
         tab1, tab2 = st.tabs(["🔒 Password", "🔑 Patient Code"])
         
         with tab1:
-            st.markdown("<h3 style='color: #ffffff;'>### Username & Password</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  Username & Password</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", key="caregiver_username")
             password = st.text_input("Password", type="password", key="caregiver_password")
             
@@ -1556,7 +1556,7 @@ def caregiver_login_page():
                     st.warning("Please enter username and password")
         
         with tab2:
-            st.markdown("<h3 style='color: #ffffff;'>### Connect to Patient</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  Connect to Patient</h3>", unsafe_allow_html=True)
             patient_code = st.text_input("Patient Access Code", max_chars=6, key="patient_code")
             
             if st.button("🔗 Connect", use_container_width=True):
@@ -1598,7 +1598,7 @@ def patient_signup_page():
         st.markdown(f"<p style='text-align: center; color: white;'>Step {st.session_state.signup_step} of 5</p>", unsafe_allow_html=True)
         
         if st.session_state.signup_step == 1:
-            st.markdown("<h3 style='color: #ffffff;'>### 👤 Basic Information</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  👤 Basic Information</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", value=st.session_state.signup_data.get('username', ''))
             name = st.text_input("Full Name",value=st.session_state.signup_data.get('name', ''))
             age = st.number_input("Age", min_value=1, max_value=120, value=st.session_state.signup_data.get('age', 25))
@@ -1619,7 +1619,7 @@ def patient_signup_page():
                     st.warning("Please fill all required fields")
         
         elif st.session_state.signup_step == 2:
-            st.markdown("<h3 style='color: #ffffff;'>### 📧 Email Verification (Optional)</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  📧 Email Verification (Optional)</h3>", unsafe_allow_html=True)
             
             email = st.text_input("Email Address (optional)", value=st.session_state.signup_data.get('email', ''))
             
@@ -1637,7 +1637,7 @@ def patient_signup_page():
                     st.rerun()
         
         elif st.session_state.signup_step == 3:
-            st.markdown("<h3 style='color: #ffffff;'>### 🏥 Your Health Conditions</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  🏥 Your Health Conditions</h3>", unsafe_allow_html=True)
             if 'diseases' not in st.session_state.signup_data:
                 st.session_state.signup_data['diseases'] = []
             
@@ -1754,7 +1754,7 @@ def patient_signup_page():
                     st.rerun()
         
         elif st.session_state.signup_step == 5:
-            st.markdown("<h3 style='color: #ffffff;'>### ✅ Review Your Information</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  ✅ Review Your Information</h3>", unsafe_allow_html=True)
             st.markdown(f"**Name:** {st.session_state.signup_data.get('name')}")
             st.markdown(f"**Username:** {st.session_state.signup_data.get('username')}")
             st.markdown(f"**Age:** {st.session_state.signup_data.get('age')}")
@@ -1801,13 +1801,13 @@ def caregiver_signup_page():
     with col2:
         st.markdown("<div class='auth-card' style='border: 3px solid #10b981;'>", unsafe_allow_html=True)
         
-        st.markdown("<h3 style='color: #ffffff;'>### Step 1: Basic Information</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #ffffff;'>  Step 1: Basic Information</h3>", unsafe_allow_html=True)
         name = st.text_input("Full Name", key="cg_name")
         username = st.text_input("Username", key="cg_username")
         phone = st.text_input("Phone Number (optional)", key="cg_phone")
         password = st.text_input("Password", type="password", key="cg_password")
         
-        st.markdown("<h3 style='color: #ffffff;'>### Step 2: Professional Details</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #ffffff;'>  Step 2: Professional Details</h3>", unsafe_allow_html=True)
         
         relationship = st.selectbox("Your Role", [
             "Family Member", "Professional Caregiver", "Nurse",
@@ -1939,7 +1939,7 @@ def dashboard_overview_tab(age_category):
             st.rerun()
     
  
-            st.markdown("<h3 style='color: #ffffff;'>### 🕐 Today's Medication Schedule</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  🕐 Today's Medication Schedule</h3>", unsafe_allow_html=True)
     
   
     due_meds = check_due_medications(st.session_state.medications)
@@ -1983,7 +1983,7 @@ def dashboard_overview_tab(age_category):
     
     
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("<h4 style='color: #ffffff;'>#### 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #ffffff;'> # 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
     
     upcoming_count = 0
     for med in upcoming[:5]: 
@@ -2024,11 +2024,11 @@ def dashboard_overview_tab(age_category):
     st.markdown("<br>", unsafe_allow_html=True)
     
    
-    st.markdown("<h3 style='color: #ffffff;'>### 📅 Active Reminders</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>  📅 Active Reminders</h3>", unsafe_allow_html=True)
     if st.session_state.medications:
         
         if missed:
-            st.markdown("<h4 style='color: #ffffff;'>#### ❌ Missed Medications</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #ffffff;'> # ❌ Missed Medications</h4>", unsafe_allow_html=True)
             for med in missed:
                 color_hex = get_medication_color_hex(med.get('color', 'blue'))
                 st.markdown(f"""
@@ -2056,7 +2056,7 @@ def dashboard_overview_tab(age_category):
         
         
         if upcoming:
-            st.markdown("<h4 style='color: #ffffff;'>#### ⏰ Upcoming Medications</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #ffffff;'> # ⏰ Upcoming Medications</h4>", unsafe_allow_html=True)
             for med in upcoming:
                 color_hex = get_medication_color_hex(med.get('color', 'blue'))
                 st.markdown(f"""
@@ -2087,7 +2087,7 @@ def dashboard_overview_tab(age_category):
         
         
         if taken:
-            st.markdown("<h4 style='color: #ffffff;'>#### ✅ Taken Medications</h4>", unsafe_allow_html=True)
+            st.markdown("<h4 style='color: #ffffff;'> # ✅ Taken Medications</h4>", unsafe_allow_html=True)
             for med in taken:
                 color_hex = get_medication_color_hex(med.get('color', 'blue'))
                 st.markdown(f"""
@@ -2107,7 +2107,7 @@ def analytics_tab(age_category):
     """Analytics tab with comprehensive graphs"""
     st.markdown("<h3 style='color: #ffffff;'>📊 Medication Analytics & Insights</h3>", unsafe_allow_html=True)
     
-    st.markdown("<h4 style='color: #ffffff;'>#### Adherence Trend</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #ffffff;'> # Adherence Trend</h4>", unsafe_allow_html=True)
     st.plotly_chart(
         create_adherence_line_chart(st.session_state.get('adherence_history', []), age_category),
         use_container_width=True
@@ -2125,7 +2125,7 @@ def analytics_tab(age_category):
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    st.markdown("<h4 style='color: #ffffff;'>#### Weekly Medication Pattern</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: #ffffff;'> # Weekly Medication Pattern</h4>", unsafe_allow_html=True)
     st.plotly_chart(create_weekly_heatmap(st.session_state.get('medication_history', [])), use_container_width=True)
 
 def medications_tab():
@@ -2317,7 +2317,7 @@ def medications_tab():
             col1, col2, col3 = st.columns([4, 2, 1])
             
             with col1:
-                st.markdown(f"### {med['name']}")
+                st.markdown(f"  {med['name']}")
                 st.markdown(f"**Dosage:** {med['dosageAmount']} | **Type:** {med['dosageType'].capitalize()}")
                 st.markdown(f"**Time:** {med['time']} | **Frequency:** {med['frequency'].replace('-', ' ').title()}")
                 if med.get('reminder_times'):
@@ -2436,7 +2436,7 @@ def appointments_tab():
             col1, col2, col3 = st.columns([4, 2, 1])
             
             with col1:
-                st.markdown(f"### 👨‍⚕️ Dr. {appt['doctor']}")
+                st.markdown(f"  👨‍⚕️ Dr. {appt['doctor']}")
                 if appt.get('specialty'):
                     st.markdown(f"**Specialty:** {appt['specialty']}")
                 st.markdown(f"**Date:** {format_date(appt['date'])} ({days} days)" if days >= 0 else f"**Date:** {format_date(appt['date'])} (past)")
@@ -2456,7 +2456,7 @@ def appointments_tab():
                     elif days == 1:
                         st.markdown("**Tomorrow**")
                     else:
-                        st.markdown(f"### 📅")
+                        st.markdown(f"  📅")
                         st.markdown(f"**In {days} days**")
             
             with col3:
@@ -2573,7 +2573,7 @@ def side_effects_tab():
             col1, col2, col3 = st.columns([4, 2, 1])
             
             with col1:
-                st.markdown(f"### {severity_emoji} {effect['medication']}")
+                st.markdown(f"  {severity_emoji} {effect['medication']}")
                 st.markdown(f"**Type:** {effect.get('type', 'Not specified')}")
                 st.markdown(f"**Severity:** {severity}")
                 st.markdown(f"**Date:** {effect['date']}")
@@ -2913,7 +2913,7 @@ def caregiver_dashboard_page():
                 col1, col2, col3 = st.columns([3, 2, 1])
                 
                 with col1:
-                    st.markdown(f"### 👤 {patient['name']}")
+                    st.markdown(f"  👤 {patient['name']}")
                     st.markdown(f"**Age:** {patient['age']}")
                     st.markdown(f"**Access Code:** {patient['access_code']}")
                     st.markdown(f"**Last Contact:** {patient.get('last_contact', 'N/A')}")
@@ -3076,6 +3076,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
