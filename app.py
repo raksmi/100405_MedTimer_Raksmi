@@ -1960,11 +1960,10 @@ def dashboard_overview_tab(age_category):
             """,
             unsafe_allow_html=True
         )
-         if st.button(
+        if st.button(
             "✓ Take Now",
             key=f"take_due_{med['id']}_{med['time']}",
-            use_container_width=True
-        ):
+            use_container_width=True):
             dose_time = med['time']
 
             for m in st.session_state.medications:
@@ -1977,11 +1976,9 @@ def dashboard_overview_tab(age_category):
                     if set(m['taken_times']) == set(all_times):
                         m['taken_today'] = True
 
-                    update_medication_history(m['id'], 'taken')
+                    update_medication_history(med['id'], 'taken')
                     update_adherence_history()
-                    st.success(
-                        f"{m['name']} at {format_time(dose_time)} marked as taken!"
-                    )
+                    save_user_data()
                     st.rerun()
     else:
           st.info("🎉 No medications due right now!")
@@ -3078,6 +3075,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
