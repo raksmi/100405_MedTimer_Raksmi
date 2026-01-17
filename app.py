@@ -1992,10 +1992,6 @@ def dashboard_overview_tab(age_category):
         st.success(f"{m['name']} at {dose_time} marked as taken!")
         st.rerun()
 
-                        update_medication_history(m['id'], 'taken')
-                        update_adherence_history()
-                        save_user_data()
-                        st.rerun()
     else:
         st.info("No medications due right now.")
     
@@ -3094,6 +3090,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
