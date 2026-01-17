@@ -245,7 +245,7 @@ def play_notification_sound():
     """
     st.markdown(audio_html, unsafe_allow_html=True)
 
-def categorize_medications_by_status():
+def categorize_medications_by_status(medications):
     """Categorize medications into missed, upcoming, and taken"""
     now = datetime.now()
     current_time = now.strftime("%H:%M")
@@ -254,7 +254,7 @@ def categorize_medications_by_status():
     upcoming = []
     taken = []
     
-    for med in st.session_state.medications:
+    for med in medications:
         med_time = med.get('time', '00:00')
         
         
@@ -3079,6 +3079,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
