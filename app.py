@@ -419,7 +419,6 @@ def check_due_medications(medications):
     
     due_medications = []
     for med in medications:
-        if not med.get('taken_today', False):
             med_time = med.get('time', '00:00')
             
             
@@ -2098,6 +2097,23 @@ def dashboard_overview_tab(age_category):
                     <span class='status-taken'>✅ Taken</span>
                 </div>
                 """, unsafe_allow_html=True)
+                
+                col1, col2 = st.columns([3, 1])
+                with col2:
+                    if st.button("↩️ Undo", key=f"undo_taken_{med['id']}_{med.get('time', 'N/A')}", use_container_width=True):
+                        dose_time = med.get('time', 'N/A')
+                        for m in st.session_state.medications:
+                            if m['id'] == med['id']:
+                                # Remove the dose time from taken_times
+                                if dose_time in m.get('taken_times', []):
+                                    m['taken_times'].remove(dose_time)
+                                # Update taken_today status
+                                if not m.get('taken_times', []):
+                                    m['taken_today'] = False
+                                update_medication_history(m['id'], 'undone')
+                        update_adherence_history()
+                        save_user_data()
+                        st.rerun()
     else:
         st.info("No medications scheduled. Add medications in the Medications tab.")
 
@@ -2341,15 +2357,6 @@ def medications_tab():
                     st.session_state.medications = [m for m in st.session_state.medications if m['id'] != med['id']]
                     save_user_data()
                     st.rerun()
-                
-                if not med.get('taken_today', False):
-                    if st.button("✓ Take", key=f"take_med_{med['id']}", use_container_width=True):
-                        med['taken_today'] = True
-                        play_notification_sound()
-                        update_medication_history(med['id'], 'taken')
-                        update_adherence_history()
-                        save_user_data()
-                        st.rerun()
             
             st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
