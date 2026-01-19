@@ -2041,11 +2041,19 @@ def dashboard_overview_tab(age_category):
                 
                 col1, col2 = st.columns([3, 1])
                 with col2:
-                    if st.button("✓ Take Now", key=f"take_missed_{med['id']}", use_container_width=True):
+                    if st.button("\u2713 Take Now", key=f"take_missed_{med['id']}_{med['time']}", use_container_width=True):
+                        dose_time = med['time']
                         for m in st.session_state.medications:
                             if m['id'] == med['id']:
-                                m['taken_today'] = True
+                                # Add specific dose time to taken_times
+                                if dose_time not in m.get('taken_times', []):
+                                    m['taken_times'].append(dose_time)
+                                # Mark medicine fully taken only if all doses done
+                                all_times = m.get('reminder_times', [m.get('time')])
+                                if set(m['taken_times']) == set(all_times):
+                                    m['taken_today'] = True
                                 update_medication_history(m['id'], 'taken')
+                                play_notification_sound()
                         update_adherence_history()
                         save_user_data()
                         st.rerun()
