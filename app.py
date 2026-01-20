@@ -252,61 +252,50 @@ def categorize_medications_by_status(medications):
     
     missed = []
     upcoming = []
-    taken = []
+    taken_doses = []
     
     for med in medications:
-        med_time = med.get('time', '00:00')
+        # Get all time slots for this medication
+        all_times = med.get('reminder_times', [med.get('time', '00:00')])
+        taken_times = med.get('taken_times', [])
         
-        
-        if med.get('reminder_times'):
-            for time_slot in med['reminder_times']:
-                if time_slot < current_time and time_slot not in med.get('taken_times', []):
-                    if not any(m['id'] == med['id'] and m['time'] == time_slot for m in missed):
-                        missed.append({
-                            'id': med['id'],
-                            'name': med['name'],
-                            'time': time_slot,
-                            'dosageAmount': med['dosageAmount'],
-                            'color': med.get('color', 'blue')
-                        })
-                elif time_slot > current_time and time_slot not in med.get('taken_times', []):
-
-                    if not any(m['id'] == med['id'] and m['time'] == time_slot for m in upcoming):
-                        upcoming.append({
-                            'id': med['id'],
-                            'name': med['name'],
-                            'time': time_slot,
-                            'dosageAmount': med['dosageAmount'],
-                            'color': med.get('color', 'blue')
-                        })
-        
-        
-        if med.get('taken_today', False):
-            taken.append(med)
-        elif med_time < current_time:
-            if not any(m['id'] == med['id'] and m['time'] == med_time for m in missed):
-                missed.append({
+        for time_slot in all_times:
+            if time_slot in taken_times:
+                # This specific dose has been taken
+                taken_doses.append({
                     'id': med['id'],
                     'name': med['name'],
-                    'time': med_time,
+                    'time': time_slot,
                     'dosageAmount': med['dosageAmount'],
                     'color': med.get('color', 'blue')
                 })
-        else:
-            if not any(m['id'] == med['id'] and m['time'] == med_time for m in upcoming):
-                upcoming.append({
-                    'id': med['id'],
-                    'name': med['name'],
-                    'time': med_time,
-                    'dosageAmount': med['dosageAmount'],
-                    'color': med.get('color', 'blue')
-                })
+            elif time_slot < current_time:
+                # This dose is past due
+                if not any(m['id'] == med['id'] and m['time'] == time_slot for m in missed):
+                    missed.append({
+                        'id': med['id'],
+                        'name': med['name'],
+                        'time': time_slot,
+                        'dosageAmount': med['dosageAmount'],
+                        'color': med.get('color', 'blue')
+                    })
+            elif time_slot > current_time:
+                # This dose is upcoming
+                if not any(m['id'] == med['id'] and m['time'] == time_slot for m in upcoming):
+                    upcoming.append({
+                        'id': med['id'],
+                        'name': med['name'],
+                        'time': time_slot,
+                        'dosageAmount': med['dosageAmount'],
+                        'color': med.get('color', 'blue')
+                    })
     
-    
+    # Sort by time
     missed.sort(key=lambda x: x['time'])
     upcoming.sort(key=lambda x: x['time'])
+    taken_doses.sort(key=lambda x: x['time'])
     
-    return missed, upcoming, taken
+    return missed, upcoming, taken_doses
 
 def get_mascot_message(adherence, time_of_day):
     """Get mascot message based on adherence and time of day"""
@@ -793,12 +782,8 @@ def update_adherence_history():
     username = st.session_state.user_profile['username']
     today = datetime.now().strftime("%Y-%m-%d")
     
-    if st.session_state.medications:
-        taken = sum(1 for med in st.session_state.medications if med.get('taken_today', False))
-        total = len(st.session_state.medications)
-        adherence = (taken / total * 100) if total > 0 else 0
-    else:
-        adherence = 0
+    # Calculate adherence based on doses taken vs total doses
+    adherence = calculate_adherence(st.session_state.medications)
     
     conn = get_db_connection()
     c = conn.cursor()
@@ -1858,6 +1843,18 @@ def get_mascot_text_color(mood):
 
 def dashboard_overview_tab(age_category):
     """Dashboard overview with stats and today's schedule"""
+    # Display current date and time
+    now = datetime.now()
+    current_date = now.strftime("%A, %B %d, %Y")
+    current_time = now.strftime("%I:%M %p")
+    
+    st.markdown(f"""
+    <div style='text-align: center; margin-bottom: 20px;'>
+        <h2 style='color: #ffffff; margin: 0;'>📅 {current_date}</h2>
+        <p style='color: #ffffff; margin: 0; font-size: 24px;'>🕐 {current_time}</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("<h3 style='color: #ffffff;'>📊 Your Health Overview</h3>", unsafe_allow_html=True)
     
     
@@ -1868,7 +1865,8 @@ def dashboard_overview_tab(age_category):
     col1, col2, col3, col4 = st.columns(4)
     
     total_meds = len(st.session_state.medications)
-    taken_today = sum(1 for med in st.session_state.medications if med.get('taken_today', False))
+    # Calculate taken doses today
+    taken_today = sum(len(med.get('taken_times', [])) for med in st.session_state.medications)
     total_appointments = len(st.session_state.appointments)
     adherence = calculate_adherence(st.session_state.medications)
     
@@ -2004,6 +2002,36 @@ def dashboard_overview_tab(age_category):
     
     st.markdown("<br>", unsafe_allow_html=True)
     
+    # Show cleaner medication status overview
+    st.markdown("<h3 style='color: #ffffff;'>💊 Today's Medication Status</h3>", unsafe_allow_html=True)
+    
+    status_col1, status_col2, status_col3 = st.columns(3)
+    
+    with status_col1:
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #10b981, #059669); border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);'>
+            <div style='font-size: 48px; color: white; font-weight: 900;'>{len(taken)}</div>
+            <div style='color: white; font-size: 18px; font-weight: 600;'>✅ Doses Taken</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with status_col2:
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);'>
+            <div style='font-size: 48px; color: white; font-weight: 900;'>{len(upcoming)}</div>
+            <div style='color: white; font-size: 18px; font-weight: 600;'>⏰ Upcoming</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with status_col3:
+        st.markdown(f"""
+        <div style='background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 16px; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);'>
+            <div style='font-size: 48px; color: white; font-weight: 900;'>{len(missed)}</div>
+            <div style='color: white; font-size: 18px; font-weight: 600;'>❌ Missed</div>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     
     has_upcoming_reminder = check_upcoming_reminders(upcoming)
     
@@ -2041,21 +2069,20 @@ def dashboard_overview_tab(age_category):
                 
                 col1, col2 = st.columns([3, 1])
                 with col2:
-                    if st.button("\u2713 Take Now", key=f"take_missed_{med['id']}_{med['time']}", use_container_width=True):
+                    if st.button("✓ Take Now", key=f"take_missed_{med['id']}_{med['time']}", use_container_width=True):
                         dose_time = med['time']
                         for m in st.session_state.medications:
                             if m['id'] == med['id']:
-                                # Add specific dose time to taken_times
                                 if dose_time not in m.get('taken_times', []):
                                     m['taken_times'].append(dose_time)
                                 # Mark medicine fully taken only if all doses done
                                 all_times = m.get('reminder_times', [m.get('time')])
                                 if set(m['taken_times']) == set(all_times):
                                     m['taken_today'] = True
-                                update_medication_history(m['id'], 'taken')
-                                play_notification_sound()
+                                update_medication_history(med['id'], 'taken')
                         update_adherence_history()
                         save_user_data()
+                        st.rerun()
                         st.rerun()
                 st.markdown("", unsafe_allow_html=True)
         
