@@ -1931,7 +1931,7 @@ def dashboard_overview_tab(age_category):
                 unsafe_allow_html=True
             )
             
-            if st.button("✓ Take Now", key=med_key, use_container_width=True):
+            if st.button("✓ Take Now", key=f"take_{med['id']}_{med['time']}_{'missed' if is_missed else 'upcoming'}, use_container_width=True):
                 for m in st.session_state.medications:
                     if m['id'] == med['id']:
                         if dose_time not in m.get('taken_times', []):
@@ -2936,6 +2936,7 @@ def main():
 
 if __name__ == "__main__":
     main()s
+
 
 
 
