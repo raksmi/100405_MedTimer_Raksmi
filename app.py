@@ -414,7 +414,8 @@ def check_due_medications(medications):
                 
                 if time_diff <= 5 and med not in due_medications:
                     due_medications.append(med)
-                    return due_medications
+    
+    return due_medications
 
 def calculate_adherence(medications):
     """Calculate medication adherence percentage (dose-based)"""
@@ -1918,7 +1919,7 @@ def dashboard_overview_tab(age_category):
         
         for med in due_meds:
             dose_time = med.get('time', '00:00')
-            med_key = f"take_{med['id']}_{dose_time}_{'missed' if is_missed else 'upcoming'}"
+            med_key = f"take_{med['id']}_{dose_time}_due"
 
             
             st.markdown(
@@ -1931,7 +1932,7 @@ def dashboard_overview_tab(age_category):
                 unsafe_allow_html=True
             )
             
-            if st.button("✓ Take Now", key=f"take_{med['id']}_{med['time']}_{'missed' if is_missed else 'upcoming'}, use_container_width=True):
+            if st.button("✓ Take Now", key=f"take_{med['id']}_{med['time']}_due", use_container_width=True):
                 for m in st.session_state.medications:
                     if m['id'] == med['id']:
                         if dose_time not in m.get('taken_times', []):
@@ -2935,7 +2936,7 @@ def main():
         account_type_selection_page()
 
 if __name__ == "__main__":
-    main()s
+    main()
 
 
 
