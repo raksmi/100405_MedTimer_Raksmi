@@ -414,8 +414,7 @@ def check_due_medications(medications):
                 
                 if time_diff <= 5 and med not in due_medications:
                     due_medications.append(med)
-    
-    return due_medications
+                    return due_medications
 
 def calculate_adherence(medications):
     """Calculate medication adherence percentage (dose-based)"""
@@ -1593,7 +1592,7 @@ def patient_signup_page():
             disease_notes = st.text_area("Notes (optional)", key="disease_notes_input")
             
             st.session_state.button_counter += 1
-            if st.button("➕ Add Disease", key=f"add_disease_step3"):
+            if st.button("➕ Add Disease", key=f"add_disease_{st.session_state.button_counter}"):
                 if disease_name:
                     st.session_state.signup_data['diseases'].append({
                         'id': str(len(st.session_state.signup_data['diseases']) + 1),
@@ -1919,8 +1918,7 @@ def dashboard_overview_tab(age_category):
         
         for med in due_meds:
             dose_time = med.get('time', '00:00')
-            med_key = f"take_{med['id']}_{dose_time}_due"
-
+            med_key = f"due_{med['id']}_{dose_time.replace(':', '')}"
             
             st.markdown(
                 f"""
@@ -1932,7 +1930,7 @@ def dashboard_overview_tab(age_category):
                 unsafe_allow_html=True
             )
             
-            if st.button("✓ Take Now", key=f"take_{med['id']}_{med['time']}_due", use_container_width=True):
+            if st.button("✓ Take Now", key=med_key, use_container_width=True):
                 for m in st.session_state.medications:
                     if m['id'] == med['id']:
                         if dose_time not in m.get('taken_times', []):
@@ -2211,12 +2209,12 @@ def medications_tab():
             
             with col3:
                 st.session_state.button_counter += 1
-                if st.button("✏️", key=f"edit_med_{med['id']}", help="Edit"):
+                if st.button("✏️", key=f"edit_{med['id']}_{st.session_state.button_counter}", help="Edit"):
                     st.session_state.editing_medication = med
                     st.rerun()
                 
                 st.session_state.button_counter += 1
-                if st.button("🗑️", key=f"delete_med_{med['id']}", help="Delete"):
+                if st.button("🗑️", key=f"delete_{med['id']}_{st.session_state.button_counter}", help="Delete"):
                     st.session_state.medications = [m for m in st.session_state.medications if m['id'] != med['id']]
                     save_user_data()
                     st.rerun()
@@ -2329,7 +2327,7 @@ def appointments_tab():
             
             with col3:
                 st.session_state.button_counter += 1
-                if st.button("🗑️", key=f"delete_med_{med['id']}", help="Delete"):
+                if st.button("🗑️", key=f"delete_appt_{appt['id']}_{st.session_state.button_counter}", help="Cancel"):
                     st.session_state.appointments = [a for a in st.session_state.appointments if a['id'] != appt['id']]
                     save_user_data()
                     st.rerun()
@@ -2459,7 +2457,7 @@ def side_effects_tab():
             
             with col3:
                 st.session_state.button_counter += 1
-                if st.button("🗑️", key=f"delete_med_{med['id']}", help="Delete"):
+                if st.button("🗑️", key=f"delete_effect_{effect['id']}_{st.session_state.button_counter}", help="Remove"):
                     st.session_state.side_effects = [e for e in st.session_state.side_effects if e['id'] != effect['id']]
                     save_user_data()
                     st.rerun()
@@ -2937,8 +2935,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
