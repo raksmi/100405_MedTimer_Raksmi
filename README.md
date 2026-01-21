@@ -1,7 +1,5 @@
 # 💊 MedTimer - Advanced Medication Management System
 
-![MedTimer Logo](https://img.shields.io/badge/MedTimer-v2.0-blue?style=for-the-badge&logo=streamlit) ![Python](https://img.shields.io/badge/Python-3.11+-green?style=for-the-badge&logo=python) ![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red?style=for-the-badge&logo=streamlit) ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
-
 **Your Comprehensive Medication Management Companion**
 
 
