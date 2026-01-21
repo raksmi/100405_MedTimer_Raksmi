@@ -206,6 +206,23 @@ def get_custom_medication_times(frequency):
     }
     return frequency_map.get(frequency, ['09:00'])
 
+def play_beep_sound():
+    """Play beep sound using HTML audio"""
+    audio_html = """
+    <audio id="beepSound" autoplay>
+        <source src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU" type="audio/wav">
+        <source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" type="audio/ogg">
+    </audio>
+    <script>
+        var audio = document.getElementById('beepSound');
+        audio.volume = 1.0;
+        audio.play().catch(function(error) {
+            console.log('Audio play failed:', error);
+        });
+    </script>
+    """
+    st.markdown(audio_html, unsafe_allow_html=True)
+
 def play_reminder_sound():
     """Play reminder sound using HTML audio with better sound quality"""
     
@@ -385,21 +402,6 @@ def update_mascot_mood(adherence):
     else:
         st.session_state.turtle_mood = 'worried'
 
-def check_upcoming_reminders(upcoming_meds):
-    """Check for upcoming medications and show reminders"""
-    now = datetime.now()
-    current_time = now.strftime("%H:%M")
-    
-    for med in upcoming_meds[:3]: 
-        med_time = datetime.strptime(med['time'], "%H:%M")
-        time_diff = (med_time - now).total_seconds() / 60 
-        
-        
-        if 0 < time_diff <= 30:
-            st.warning(f"⏰ **Upcoming Reminder:** {med['name']} ({med['dosageAmount']}) at {med['time']} - Take in {int(time_diff)} minutes!")
-            return True
-    return False
-
 def check_due_medications(medications):
     """Check for medications that are due now and trigger reminders"""
     now = datetime.now()
@@ -409,7 +411,6 @@ def check_due_medications(medications):
     for med in medications:
             med_time = med.get('time', '00:00')
             
-            
             med_datetime = datetime.strptime(med_time, "%H:%M").replace(
                 year=now.year, month=now.month, day=now.day
             )
@@ -418,7 +419,6 @@ def check_due_medications(medications):
             if time_diff <= 5:
                 due_medications.append(med)
             
-           
             if med.get('reminder_times'):
                 for reminder_time in med['reminder_times']:
                     reminder_datetime = datetime.strptime(reminder_time, "%H:%M").replace(
@@ -566,7 +566,6 @@ def save_user_data():
         
         username = st.session_state.user_profile.get('username')
         
-       
         c.execute('''INSERT OR REPLACE INTO users 
                      (username, name, age, email, password, user_type, phone, relationship, experience, notes, created_at)
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
@@ -582,12 +581,10 @@ def save_user_data():
                    st.session_state.user_profile.get('notes', ''),
                    datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         
-        
         c.execute('DELETE FROM diseases WHERE username = ?', (username,))
         for disease in st.session_state.user_profile.get('diseases', []):
             c.execute('INSERT INTO diseases (username, name, type, notes) VALUES (?, ?, ?, ?)',
                      (username, disease.get('name'), disease.get('type'), disease.get('notes', '')))
-        
         
         c.execute('DELETE FROM medications WHERE username = ?', (username,))
         for med in st.session_state.medications:
@@ -599,7 +596,6 @@ def save_user_data():
                       med.get('instructions', ''), int(med.get('taken_today', False)),
                       med.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
         
-        
         c.execute('DELETE FROM appointments WHERE username = ?', (username,))
         for appt in st.session_state.appointments:
             c.execute('''INSERT INTO appointments 
@@ -608,7 +604,6 @@ def save_user_data():
                      (username, appt.get('doctor'), appt.get('specialty'), appt.get('date'),
                       appt.get('time'), appt.get('location', ''), appt.get('phone', ''),
                       appt.get('notes', ''), appt.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
-        
         
         c.execute('DELETE FROM side_effects WHERE username = ?', (username,))
         for effect in st.session_state.side_effects:
@@ -632,7 +627,6 @@ def load_user_data(username):
         conn = get_db_connection()
         c = conn.cursor()
         
-        
         c.execute('SELECT * FROM users WHERE username = ?', (username,))
         user = c.fetchone()
         
@@ -654,7 +648,6 @@ def load_user_data(username):
             'diseases': []
         }
         
-        
         c.execute('SELECT * FROM diseases WHERE username = ?', (username,))
         diseases = c.fetchall()
         for disease in diseases:
@@ -664,7 +657,6 @@ def load_user_data(username):
                 'type': disease[3],
                 'notes': disease[4]
             })
-        
        
         c.execute('SELECT * FROM medications WHERE username = ?', (username,))
         meds = c.fetchall()
@@ -681,10 +673,8 @@ def load_user_data(username):
                 'instructions': med[8],
                 'taken_today': bool(med[9]),
                 'taken_times': [],
-
                 'created_at': med[10]
             })
-        
         
         c.execute('SELECT * FROM appointments WHERE username = ?', (username,))
         appts = c.fetchall()
@@ -702,7 +692,6 @@ def load_user_data(username):
                 'created_at': appt[9]
             })
         
-        
         c.execute('SELECT * FROM side_effects WHERE username = ?', (username,))
         effects = c.fetchall()
         st.session_state.side_effects = []
@@ -717,7 +706,6 @@ def load_user_data(username):
                 'reported_at': effect[7]
             })
         
-       
         c.execute('SELECT * FROM medication_history WHERE username = ?', (username,))
         hist = c.fetchall()
         st.session_state.medication_history = []
@@ -729,7 +717,6 @@ def load_user_data(username):
                 'date': h[5]
             })
         
-       
         c.execute('SELECT * FROM adherence_history WHERE username = ?', (username,))
         adh = c.fetchall()
         st.session_state.adherence_history = []
@@ -853,7 +840,6 @@ def inject_custom_css(age_category='adult'):
         box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
         border-left: 4px solid {primary_color};
-        
     }}
     
     .medication-card:hover {{
@@ -883,10 +869,6 @@ def inject_custom_css(age_category='adult'):
     .stat-card p, .stat-card div, .stat-card span {{
         color: #1f2937 !important;
     }}
-   .mascot-message-text {{
-    color: #000000 !important;
-    }}
-
     
     .stat-number {{
         font-size: 56px;
@@ -895,10 +877,6 @@ def inject_custom_css(age_category='adult'):
         line-height: 1.2;
         margin-bottom: 8px;
     }}
-    .mascot-message-text {{
-    color: #000000 !important;
-    }}
-
     
     .stat-label {{
         font-size: {font_size};
@@ -1038,6 +1016,11 @@ def inject_custom_css(age_category='adult'):
         margin: 10px 0;
         border-left: 4px solid #f59e0b;
     }}
+    
+    .pre-reminder {{
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        border-left: 4px solid #3b82f6;
+    }}
     </style>
     """
     return css
@@ -1081,41 +1064,6 @@ def create_adherence_line_chart(adherence_history, age_category='adult'):
         yaxis=dict(range=[0, 105], ticksuffix='%'),
         height=450, plot_bgcolor='#f9fafb', paper_bgcolor='white',
         hovermode='x unified', showlegend=False, font=dict(size=14)
-    )
-    return fig
-
-def create_medication_pie_chart(medications, age_category='adult'):
-    """Create pie chart showing medications by type"""
-    if not medications:
-        fig = go.Figure()
-        fig.add_annotation(
-            text="No medications added yet.<br>Add your first medication!",
-            xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False,
-            font=dict(size=16, color="#6b7280")
-        )
-        fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
-        return fig
-    
-    type_counts = {}
-    for med in medications:
-        med_type = med.get('dosageType', 'other').capitalize()
-        type_counts[med_type] = type_counts.get(med_type, 0) + 1
-    
-    labels = list(type_counts.keys())
-    values = list(type_counts.values())
-    colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EC4899', '#F59E0B', '#EF4444']
-    
-    fig = go.Figure(data=[go.Pie(
-        labels=labels, values=values, hole=0.4,
-        marker=dict(colors=colors, line=dict(color='white', width=3)),
-        textinfo='label+percent', textfont=dict(size=16, color='white', family='Arial Black'),
-        hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
-    )])
-    
-    fig.update_layout(
-        title={'text': '💊 Medications by Type', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
-        height=450, paper_bgcolor='white', showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
     )
     return fig
 
@@ -1199,45 +1147,6 @@ def create_side_effects_bar_chart(side_effects):
     )
     return fig
 
-def create_medication_status_donut(medications):
-    """Create donut chart showing taken vs pending medications"""
-    if not medications:
-        fig = go.Figure()
-        fig.add_annotation(
-            text="No medications to track.<br>Add medications to see status!",
-            xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False,
-            font=dict(size=16, color="#6b7280")
-        )
-        fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
-        return fig
-    
-    taken = sum(1 for med in medications if med.get('taken_today', False))
-    pending = len(medications) - taken
-    
-    labels = ['Taken ✅', 'Pending ⏰']
-    values = [taken, pending]
-    colors = ['#10b981', '#f59e0b']
-    
-    fig = go.Figure(data=[go.Pie(
-        labels=labels, values=values, hole=0.5,
-        marker=dict(colors=colors, line=dict(color='white', width=4)),
-        textinfo='label+value', textfont=dict(size=18, color='white', family='Arial Black'),
-        hovertemplate='<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>'
-    )])
-    
-    fig.add_annotation(
-        text=f"{(taken/len(medications)*100):.0f}%<br>Complete",
-        x=0.5, y=0.5, font=dict(size=24, color='#1f2937', family='Arial Black'),
-        showarrow=False
-    )
-    
-    fig.update_layout(
-        title={'text': '📊 Today\'s Progress', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
-        height=450, paper_bgcolor='white', showlegend=True,
-        legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
-    )
-    return fig
-
 def create_weekly_heatmap(medication_history):
     """Create heatmap showing medication adherence by day and time"""
     if not medication_history:
@@ -1276,7 +1185,6 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     styles = getSampleStyleSheet()
     story = []
     
-    
     title_style = ParagraphStyle(
         'CustomTitle',
         parent=styles['Heading1'],
@@ -1306,7 +1214,6 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     story.append(Paragraph("MEDTIMER HEALTH REPORT", title_style))
     story.append(Spacer(1, 20))
     
-    
     profile = report_data.get('profile', {})
     story.append(Paragraph(f"<b>Patient:</b> {profile.get('name', 'N/A')}", normal_style))
     story.append(Paragraph(f"<b>Age:</b> {profile.get('age', 'N/A')}", normal_style))
@@ -1315,7 +1222,6 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     story.append(Spacer(1, 20))
     story.append(Paragraph("=" * 70, normal_style))
     story.append(Spacer(1, 20))
-    
     
     medications = report_data.get('medications', [])
     story.append(Paragraph(f"💊 MEDICATIONS ({len(medications)})", heading_style))
@@ -1351,7 +1257,6 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     
     story.append(Spacer(1, 20))
     
-
     appointments = report_data.get('appointments', [])
     story.append(Paragraph(f"👨‍⚕️ APPOINTMENTS ({len(appointments)})", heading_style))
     story.append(Spacer(1, 10))
@@ -1418,7 +1323,6 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     story.append(Paragraph("Generated by MedTimer - Your Medication Management Companion", normal_style))
     story.append(Paragraph("=" * 70, normal_style))
     
-    
     doc.build(story)
     buffer.seek(0)
     return buffer.getvalue()
@@ -1468,8 +1372,6 @@ def patient_login_page():
         with tab1:
             st.markdown("<h3 style='color: #ffffff;'>  Username & Password Login</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", key="login_username")
-
-
             password = st.text_input("Password", type="password", key="login_password")
             
             if st.button("✨ Sign In", key="signin_btn", use_container_width=True):
@@ -1673,7 +1575,6 @@ def patient_signup_page():
                 "Every 12 hours", "As needed", "Weekly", "Monthly"
             ], key="frequency_select")
             
-            
             st.markdown("<h3 style='color: #ffffff;'>⏰ Schedule Times</h3>", unsafe_allow_html=True)
             
             default_times = get_custom_medication_times(frequency.lower().replace(' ', '-'))
@@ -1842,12 +1743,10 @@ def get_mascot_text_color(mood):
 
 def dashboard_overview_tab(age_category):
     """Dashboard overview with stats and today's schedule"""
-    # Get current date and time
     now = datetime.now()
     current_date = now.strftime("%A, %B %d, %Y")
     current_time = now.strftime("%I:%M %p")
     
-    # Display date and time header
     st.markdown(f"""
     <div style="
         background: rgba(255, 255, 255, 0.15);
@@ -1868,11 +1767,9 @@ def dashboard_overview_tab(age_category):
     </div>
     """, unsafe_allow_html=True)
     
-    # Get medication status
     missed, upcoming, taken = categorize_medications_by_status(st.session_state.medications)
     due_meds = check_due_medications(st.session_state.medications)
     
-    # Calculate stats
     total_meds = len(st.session_state.medications)
     taken_today = sum(1 for med in st.session_state.medications if med.get('taken_today', False))
     total_appointments = len(st.session_state.appointments)
@@ -1880,7 +1777,6 @@ def dashboard_overview_tab(age_category):
     
     update_mascot_mood(adherence)
     
-    # Stats cards
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -1918,7 +1814,6 @@ def dashboard_overview_tab(age_category):
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Mascot message
     time_of_day = get_time_of_day().lower().replace('👋 ', '')
     mascot_message = get_mascot_message(adherence, time_of_day)
     mascot_color = get_mascot_text_color(st.session_state.turtle_mood)
@@ -1935,20 +1830,19 @@ def dashboard_overview_tab(age_category):
     unsafe_allow_html=True
 )
 
-    # Sound toggle button
     col_sound_left, col_sound_right = st.columns([8, 1])
     with col_sound_right:
         if st.button("🔊" if st.session_state.sound_enabled else "🔇", key="sound_toggle", use_container_width=True, help="Toggle sound notifications"):
             st.session_state.sound_enabled = not st.session_state.sound_enabled
             st.rerun()
     
-    # Today's medication schedule
     st.markdown("<h3 style='color: #ffffff; margin-top: 20px;'> 📋 Today's Medication Schedule</h3>", unsafe_allow_html=True)
     
     due_meds = check_due_medications(st.session_state.medications)
     if due_meds:
        if st.session_state.sound_enabled:
           play_reminder_sound()
+          play_beep_sound()
        for med in due_meds:
           st.markdown(
             f"""
@@ -1959,16 +1853,13 @@ def dashboard_overview_tab(age_category):
             """,
             unsafe_allow_html=True
         )
-       if st.button(
-            "✓ Take Now",
-            key=f"take_due_{med['id']}_{med['time']}_{datetime.now().strftime('%Y%m%d%H%M%S%f')}",
-            use_container_width=True):
+       unique_key = f"take_due_{med['id']}_{med['time']}_{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+       if st.button("✓ Take Now", key=unique_key, use_container_width=True):
             dose_time = med['time']
             for m in st.session_state.medications:
                 if m['id'] == med['id']:
                     if dose_time not in m.get('taken_times', []):
                         m['taken_times'].append(dose_time)
-                    # Mark medicine fully taken only if all doses done
                     all_times = m.get('reminder_times', [m.get('time')])
                     if set(m['taken_times']) == set(all_times):
                         m['taken_today'] = True
@@ -1979,25 +1870,26 @@ def dashboard_overview_tab(age_category):
     else:
           st.info("🎉 No medications due right now!")
           st.markdown("<br>", unsafe_allow_html=True)
-          st.markdown("<h4 style='color: #ffffff;'> # 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
-          upcoming_count = 0
+    
+    st.markdown("<h4 style='color: #ffffff;'> 📅 Upcoming Reminders (Next 30 minutes)</h4>", unsafe_allow_html=True)
+    
+    upcoming_30_min = []
     for med in upcoming[:5]: 
         med_time = datetime.strptime(med['time'], "%H:%M")
         now = datetime.now()
         time_diff = (med_time - now).total_seconds() / 60
         
         if 0 < time_diff <= 30:
+            upcoming_30_min.append(med)
             st.markdown(f"""
-            <div class='reminder-item' style='border-left-color: #3b82f6;'>
+            <div class='reminder-item pre-reminder'>
                 <strong>🔔 In {int(time_diff)} minutes:</strong> {med['name']} ({med['dosageAmount']}) at {format_time(med['time'])}
             </div>
             """, unsafe_allow_html=True)
-            upcoming_count += 1
     
-    if upcoming_count == 0:
+    if len(upcoming_30_min) == 0:
         st.info("No upcoming medications in the next 30 minutes.")
     
-    # Missed medications section
     if missed:
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("<h4 style='color: #ffffff;'> ⚠️ Missed Medications</h4>", unsafe_allow_html=True)
@@ -2038,7 +1930,6 @@ def medications_tab():
     """Medications tab content"""
     st.markdown("<h3 style='color: #ffffff;'>💊 Your Medications</h3>", unsafe_allow_html=True)
     
-    
     if st.session_state.editing_medication:
         med_to_edit = st.session_state.editing_medication
         st.markdown("<h4 style='color: #ffffff;'>✏️ Edit Medication</h4>", unsafe_allow_html=True)
@@ -2064,7 +1955,6 @@ def medications_tab():
                        "every-4-hours", "every-6-hours", "every-8-hours",
                        "every-12-hours", "as-needed", "weekly", "monthly"].index(med_to_edit.get('frequency', 'once-daily')),
                 key="edit_frequency")
-                
                 
                 st.info("Set specific times for each dose")
                 
@@ -2094,7 +1984,6 @@ def medications_tab():
             col_submit, col_cancel = st.columns(2)
             with col_submit:
                 if st.form_submit_button("💾 Save Changes", use_container_width=True):
-                    
                     for med in st.session_state.medications:
                         if med['id'] == med_to_edit['id']:
                             med['name'] = edit_name
@@ -2118,7 +2007,6 @@ def medications_tab():
                     st.session_state.editing_medication = None
                     st.rerun()
     
-    
     with st.expander("➕ Add New Medication", expanded=False):
         col1, col2 = st.columns(2)
         
@@ -2134,7 +2022,6 @@ def medications_tab():
                 "every-4-hours", "every-6-hours", "every-8-hours",
                 "every-12-hours", "as-needed", "weekly", "monthly"
             ], key="new_frequency")
-            
             
             st.info("Set specific times for each dose")
             
@@ -2609,7 +2496,6 @@ def reports_tab():
         }
         
         if report_format == "PDF":
-           
             pdf_content = generate_pdf_report(report_data, report_type)
             
             st.success("PDF report generated successfully!")
@@ -2623,7 +2509,6 @@ def reports_tab():
                 key=f"download_pdf_{datetime.now().strftime('%Y%m%d%H%M%S')}"
             )
         else:
-            
             report = f"""
 {'=' * 70}
 MEDTIMER HEALTH REPORT
@@ -2726,7 +2611,6 @@ def patient_dashboard_page():
     age_category = get_age_category(age)
     greeting = get_time_of_day()
     
-    
     st.markdown(inject_custom_css(age_category), unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([2, 4, 2])
@@ -2744,7 +2628,6 @@ def patient_dashboard_page():
     """,
     unsafe_allow_html=True
 )
-
     
     with col3:
         if st.button("🚪 Logout", key="dashboard_logout", use_container_width=True):
@@ -2801,7 +2684,6 @@ def caregiver_dashboard_page():
     tab1, tab2, tab3, tab4 = st.tabs(["👥 My Patients", "📊 Overview", "🔗 Connect", "⚙️ Settings"])
     
     with tab1:
-        
         if 'connected_patients' not in st.session_state:
             st.session_state.connected_patients = []
         
@@ -2847,7 +2729,6 @@ def caregiver_dashboard_page():
                 st.rerun()
     
     with tab2:
-        
         total_patients = len(st.session_state.connected_patients)
         total_medications = sum(p.get('medications', 0) for p in st.session_state.connected_patients)
         avg_adherence = sum(p.get('adherence', 0) for p in st.session_state.connected_patients) / total_patients if total_patients > 0 else 0
@@ -2893,7 +2774,6 @@ def caregiver_dashboard_page():
             st.info("Connect to patients to see overview statistics.")
     
     with tab3:
-        
         st.info("Ask your patient for their 6-digit access code to connect and monitor their medication adherence.")
         
         col1, col2 = st.columns([2, 1])
@@ -2912,7 +2792,6 @@ def caregiver_dashboard_page():
         
         st.markdown("<br>", unsafe_allow_html=True)
         
-        
         if 'caregiver_code' not in st.session_state:
             st.session_state.caregiver_code = generate_patient_code()
         
@@ -2920,7 +2799,6 @@ def caregiver_dashboard_page():
         st.caption("Share this code with patients who want to connect with you.")
     
     with tab4:
-        
         profile = st.session_state.user_profile
         
         col1, col2 = st.columns(2)
@@ -2940,20 +2818,16 @@ def caregiver_dashboard_page():
 def main():
     """Main application router"""
     
-   
     init_database()
-  
     initialize_session_state()
-    
     
     age_category = 'adult' 
     if st.session_state.user_profile:
         age = st.session_state.user_profile.get('age', 25)
         age_category = get_age_category(age)
-   
+    
     st.markdown(inject_custom_css(age_category), unsafe_allow_html=True)
     
-
     page = st.session_state.page
     
     if page == 'account_type_selection':
