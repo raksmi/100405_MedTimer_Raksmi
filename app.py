@@ -1925,16 +1925,16 @@ def dashboard_overview_tab(age_category):
     st.markdown(
     f"""
     <div style="
-        background: rgba(255, 255, 255, 0.95);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border-radius: 16px;
         padding: 24px;
         box-shadow: 0 6px 12px rgba(0,0,0,0.12);
         text-align: center;
-        border-left: 5px solid {mascot_color};
+        border: 3px solid rgba(255, 255, 255, 0.4);
         margin-bottom: 30px;
     ">
         <img src="{mascot_img}" width="100" style="margin-bottom:15px;">
-        <p style="font-size:18px; color:#1f2937 !important; font-weight: 500; margin: 0;">
+        <p style="font-size:18px; color:#ffffff !important; font-weight: 600; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
             {mascot_message}
         </p>
     </div>
@@ -1970,7 +1970,7 @@ def dashboard_overview_tab(age_category):
         )
        if st.button(
             "✓ Take Now",
-            key=f"take_due_{med['id']}_{med['time']}",
+            key=f"take_due_{med['id']}_{med['time']}_{datetime.now().strftime('%Y%m%d%H%M%S%f')}",
             use_container_width=True):
             dose_time = med['time']
             for m in st.session_state.medications:
