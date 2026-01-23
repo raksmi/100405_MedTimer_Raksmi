@@ -3200,4 +3200,5 @@ def main():
         account_type_selection_page()
 
 if __name__ == "__main__":
-    main(
+    main()
+
