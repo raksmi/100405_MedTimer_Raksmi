@@ -1,4 +1,3 @@
-
 import streamlit as st
 import sqlite3
 import json
@@ -19,7 +18,7 @@ import time
 
 st.set_page_config(
     page_title="MedTimer - Medication Management",
-    page_icon="\ud83d\udc8a",
+    page_icon="💊",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -374,73 +373,73 @@ def get_mascot_message(adherence, time_of_day):
     if adherence >= 90:
         messages = {
             'morning': [
-                "\ud83c\udf1f You're a medication superstar! Keep shining!",
-                "\u2600\ufe0f Amazing start to the day! 90%+ adherence!",
-                "\ud83c\udfaf Perfect score so far! You're crushing it!"
+                "🌟 You're a medication superstar! Keep shining!",
+                "☀️ Amazing start to the day! 90%+ adherence!",
+                "🎯 Perfect score so far! You're crushing it!"
             ],
             'afternoon': [
-                "\ud83c\udf1f Still going strong! You're unstoppable!",
-                "\ud83d\udcaa Your dedication is inspiring!",
-                "\ud83c\udfc6 Champion status maintained all day!"
+                "🌟 Still going strong! You're unstoppable!",
+                "💪 Your dedication is inspiring!",
+                "🏆 Champion status maintained all day!"
             ],
             'evening': [
-                "\ud83c\udf1f What a perfect day! You're amazing!",
-                "\ud83c\udf89 Congratulations on near-perfect adherence!",
-                "\u2b50 You've mastered your medication routine!"
+                "🌟 What a perfect day! You're amazing!",
+                "🎉 Congratulations on near-perfect adherence!",
+                "⭐ You've mastered your medication routine!"
             ]
         }
     elif adherence >= 70:
         messages = {
             'morning': [
-                "\ud83d\udc4d Good start today! Let's keep it up!",
-                "\ud83d\udcaa You're doing great! Keep going!",
-                "\ud83c\udf05 Nice start! Stay on track!"
+                "👍 Good start today! Let's keep it up!",
+                "💪 You're doing great! Keep going!",
+                "🌅 Nice start! Stay on track!"
             ],
             'afternoon': [
-                "\ud83d\udc4d Still doing well! Almost there!",
-                "\ud83d\udcaa Good progress! You can do it!",
-                "\ud83c\udf24 Staying strong! Keep focused!"
+                "👍 Still doing well! Almost there!",
+                "💪 Good progress! You can do it!",
+                "🌤 Staying strong! Keep focused!"
             ],
             'evening': [
-                "\ud83d\udc4d Good effort today! Tomorrow will be even better!",
-                "\ud83d\udcaa Solid work! Rest well!",
-                "\ud83c\udf19 Nice job! You're improving!"
+                "👍 Good effort today! Tomorrow will be even better!",
+                "💪 Solid work! Rest well!",
+                "🌙 Nice job! You're improving!"
             ]
         }
     elif adherence >= 50:
         messages = {
             'morning': [
-                "\ud83e\udd14 Let's focus on today's medications!",
-                "\ud83d\udcad Every pill counts! Let's try to take all!",
-                "\ud83d\udccb Review your schedule and stay mindful!"
+                "🤔 Let's focus on today's medications!",
+                "💭 Every pill counts! Let's try to take all!",
+                "📋 Review your schedule and stay mindful!"
             ],
             'afternoon': [
-                "\ud83e\udd14 Keep trying! You've got this!",
-                "\ud83d\udcad Stay focused on your health goals!",
-                "\ud83d\udccb Don't forget your afternoon doses!"
+                "🤔 Keep trying! You've got this!",
+                "💭 Stay focused on your health goals!",
+                "📋 Don't forget your afternoon doses!"
             ],
             'evening': [
-                "\ud83e\udd14 Tomorrow is a new day! Let's plan better!",
-                "\ud83d\udcad Reflect and prepare for a better day!",
-                "\ud83d\udccb Let's organize your schedule for tomorrow!"
+                "🤔 Tomorrow is a new day! Let's plan better!",
+                "💭 Reflect and prepare for a better day!",
+                "📋 Let's organize your schedule for tomorrow!"
             ]
         }
     else:
         messages = {
             'morning': [
-                "\u26a0\ufe0f Let's make today better than yesterday!",
-                "\ud83d\udcaa Start fresh! You can improve!",
-                "\ud83c\udfaf Focus on one medication at a time!"
+                "⚠️ Let's make today better than yesterday!",
+                "💪 Start fresh! You can improve!",
+                "🎯 Focus on one medication at a time!"
             ],
             'afternoon': [
-                "\u26a0\ufe0f Don't give up! Every dose matters!",
-                "\ud83d\udcaa Small steps lead to big changes!",
-                "\ud83c\udfaf Stay committed to your health!"
+                "⚠️ Don't give up! Every dose matters!",
+                "💪 Small steps lead to big changes!",
+                "🎯 Stay committed to your health!"
             ],
             'evening': [
-                "\u26a0\ufe0f Tomorrow is a fresh start! Let's plan!",
-                "\ud83d\udcaa I believe in you! Try again tomorrow!",
-                "\ud83c\udfaf Let's set a goal for tomorrow!"
+                "⚠️ Tomorrow is a fresh start! Let's plan!",
+                "💪 I believe in you! Try again tomorrow!",
+                "🎯 Let's set a goal for tomorrow!"
             ]
         }
     
@@ -500,12 +499,12 @@ def check_due_doses(doses):
 def get_mascot_emoji(mood):
     """Get emoji mascot based on mood"""
     mascot_emojis = {
-        'happy': '\ud83d\udc22\ud83d\ude0a',
-        'excited': '\ud83d\udc22\ud83c\udf89',
-        'neutral': '\ud83d\udc22\ud83d\ude10',
-        'worried': '\ud83d\udc22\ud83d\ude1f'
+        'happy': '🐢😊',
+        'excited': '🐢🎉',
+        'neutral': '🐢😐',
+        'worried': '🐢😟'
     }
-    return mascot_emojis.get(mood, '\ud83d\udc22')
+    return mascot_emojis.get(mood, '🐢')
 
 def get_severity_color(severity):
     """Get color for severity level"""
@@ -514,8 +513,8 @@ def get_severity_color(severity):
 
 def get_severity_emoji(severity):
     """Get emoji for severity level"""
-    emojis = {'Mild': '\ud83d\udfe2', 'Moderate': '\ud83d\udfe1', 'Severe': '\ud83d\udd34'}
-    return emojis.get(severity, '\u26aa')
+    emojis = {'Mild': '🟢', 'Moderate': '🟡', 'Severe': '🔴'}
+    return emojis.get(severity, '⚪')
 
 def get_medication_color_hex(color_name):
     """Convert color name to hex value"""
@@ -848,7 +847,7 @@ def update_adherence_history():
         c.execute('UPDATE adherence_history SET adherence = ?, updated = ? WHERE id = ?',
                  (adherence, datetime.now().strftime("%H:%M:%S"), existing[0]))
     else:
-        c.execute('INSERT INTO adherence_history (username, date, adherence, updated) VALUES (?, ?, ?, ?)'',
+        c.execute('INSERT INTO adherence_history (username, date, adherence, updated) VALUES (?, ?, ?, ?)\'',
                  (username, today, adherence, datetime.now().strftime("%H:%M:%S")))
     
     conn.commit()
@@ -1305,7 +1304,7 @@ def create_adherence_line_chart(adherence_history, age_category='adult'):
                   annotation_text="100% Goal", annotation_position="right")
     
     fig.update_layout(
-        title={'text': '\ud83d\udcc8 Medication Adherence Trend', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
+        title={'text': '📈 Medication Adherence Trend', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
         xaxis_title='Date', yaxis_title='Adherence Rate (%)',
         yaxis=dict(range=[0, 105], ticksuffix='%'),
         height=450, plot_bgcolor='#f9fafb', paper_bgcolor='white',
@@ -1342,7 +1341,7 @@ def create_medication_pie_chart(medications, age_category='adult'):
     )])
     
     fig.update_layout(
-        title={'text': '\ud83d\udc8a Medications by Type', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
+        title={'text': '💊 Medications by Type', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
         height=450, paper_bgcolor='white', showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5)
     )
@@ -1387,7 +1386,7 @@ def create_daily_schedule_bar_chart(medications, age_category='adult'):
     ])
     
     fig.update_layout(
-        title={'text': '\ud83d\udd50 Daily Medication Schedule', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
+        title={'text': '🕐 Daily Medication Schedule', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
         xaxis_title='Time of Day', yaxis_title='Number of Medications',
         height=450, plot_bgcolor='#f9fafb', paper_bgcolor='white',
         showlegend=False, font=dict(size=14)
@@ -1422,7 +1421,7 @@ def create_side_effects_bar_chart(side_effects):
     ])
     
     fig.update_layout(
-        title={'text': '\u26a0\ufe0f Side Effects by Severity', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
+        title={'text': '⚠️ Side Effects by Severity', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
         xaxis_title='Severity Level', yaxis_title='Number of Reports',
         height=450, plot_bgcolor='#f9fafb', paper_bgcolor='white',
         showlegend=False, font=dict(size=14)
@@ -1456,7 +1455,7 @@ def create_medication_status_donut(medications):
     
     pending = total_doses - taken_doses
     
-    labels = ['Taken \u2705', 'Pending \u23f0']
+    labels = ['Taken ✅', 'Pending ⏰']
     values = [taken_doses, pending]
     colors = ['#10b981', '#f59e0b']
     
@@ -1474,7 +1473,7 @@ def create_medication_status_donut(medications):
     )
     
     fig.update_layout(
-        title={'text': '\ud83d\udcca Today's Progress', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
+        title={'text': '📊 Today\'s Progress', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
         height=450, paper_bgcolor='white', showlegend=True,
         legend=dict(orientation="h", yanchor="bottom", y=-0.1, xanchor="center", x=0.5)
     )
@@ -1505,7 +1504,7 @@ def create_weekly_heatmap(medication_history):
     ))
     
     fig.update_layout(
-        title={'text': '\ud83d\udcc5 Weekly Medication Heatmap', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
+        title={'text': '📅 Weekly Medication Heatmap', 'font': {'size': 24, 'color': '#1f2937', 'family': 'Arial Black'}},
         xaxis_title='Time of Day', yaxis_title='Day of Week',
         height=400, plot_bgcolor='white', paper_bgcolor='white', font=dict(size=14)
     )
@@ -1557,7 +1556,7 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     story.append(Spacer(1, 20))
     
     medications = report_data.get('medications', [])
-    story.append(Paragraph(f"\ud83d\udc8a MEDICATIONS ({len(medications)})", heading_style))
+    story.append(Paragraph(f"💊 MEDICATIONS ({len(medications)})", heading_style))
     story.append(Spacer(1, 10))
     
     if medications:
@@ -1592,7 +1591,7 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     story.append(Spacer(1, 20))
     
     appointments = report_data.get('appointments', [])
-    story.append(Paragraph(f"\ud83d\udc68\u200d\u2695\ufe0f APPOINTMENTS ({len(appointments)})", heading_style))
+    story.append(Paragraph(f"👨‍⚕️ APPOINTMENTS ({len(appointments)})", heading_style))
     story.append(Spacer(1, 10))
     
     if appointments:
@@ -1624,7 +1623,7 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     story.append(Spacer(1, 20))
     
     side_effects = report_data.get('side_effects', [])
-    story.append(Paragraph(f"\u26a0\ufe0f SIDE EFFECTS ({len(side_effects)})", heading_style))
+    story.append(Paragraph(f"⚠️ SIDE EFFECTS ({len(side_effects)})", heading_style))
     story.append(Spacer(1, 10))
     
     if side_effects:
@@ -1664,7 +1663,7 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
 # Authentication Pages
 def account_type_selection_page():
     """Landing page for selecting account type"""
-    st.markdown("<h1 style='text-align: center; margin-top: 50px; color: white;'>\ud83c\udfe5 Welcome to MedTimer</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; margin-top: 50px; color: white;'>🏥 Welcome to MedTimer</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; font-size: 20px; color: #fff; margin-bottom: 50px;'>Your Comprehensive Medication Management Solution</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -1676,13 +1675,13 @@ def account_type_selection_page():
         col_a, col_b = st.columns(2)
         
         with col_a:
-            if st.button("\ud83d\udc64 Patient", key="patient_btn", use_container_width=True):
+            if st.button("👤 Patient", key="patient_btn", use_container_width=True):
                 st.session_state.account_type = 'patient'
                 st.session_state.page = 'patient_login'
                 st.rerun()
         
         with col_b:
-            if st.button("\ud83e\udd1d Caregiver", key="caregiver_btn", use_container_width=True):
+            if st.button("🤝 Caregiver", key="caregiver_btn", use_container_width=True):
                 st.session_state.account_type = 'caregiver'
                 st.session_state.page = 'caregiver_login'
                 st.rerun()
@@ -1691,7 +1690,7 @@ def account_type_selection_page():
 
 def patient_login_page():
     """Patient login page"""
-    st.markdown("<h1 style='text-align: center; margin-top: 50px; color: white;'>\ud83d\udc8a Welcome to MedTimer</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; margin-top: 50px; color: white;'>💊 Welcome to MedTimer</h1>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; font-size: 20px; color: #fff; margin-bottom: 30px;'>Your Comprehensive Medication Management Solution</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -1699,14 +1698,14 @@ def patient_login_page():
     with col2:
         st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
         
-        tab1, tab2 = st.tabs(["\ud83d\udd12 Password", "\ud83d\udce7 Email"])
+        tab1, tab2 = st.tabs(["🔒 Password", "📧 Email"])
         
         with tab1:
             st.markdown("<h3 style='color: #ffffff;'>  Username & Password Login</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", key="login_username")
             password = st.text_input("Password", type="password", key="login_password")
             
-            if st.button("\u2728 Sign In", use_container_width=True):
+            if st.button("✨ Sign In", use_container_width=True):
                 if username and password:
                     if load_user_data(username):
                         st.success(f"Welcome back, {st.session_state.user_profile['name']}!")
@@ -1744,25 +1743,25 @@ def patient_login_page():
 
 def caregiver_login_page():
     """Caregiver login page"""
-    if st.button("\u2190 Back"):
+    if st.button("← Back"):
         st.session_state.page = 'account_type_selection'
         st.rerun()
     
-    st.markdown("<h1 style='text-align: center; margin-top: 20px; color: white;'>\ud83e\udd1d Caregiver Login</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; margin-top: 20px; color: white;'>🤝 Caregiver Login</h1>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
     with col2:
         st.markdown("<div class='auth-card' style='border: 3px solid #10b981;'>", unsafe_allow_html=True)
         
-        tab1, tab2 = st.tabs(["\ud83d\udd12 Password", "\ud83d\udd11 Patient Code"])
+        tab1, tab2 = st.tabs(["🔒 Password", "🔑 Patient Code"])
         
         with tab1:
             st.markdown("<h3 style='color: #ffffff;'>  Username & Password</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", key="caregiver_username")
             password = st.text_input("Password", type="password", key="caregiver_password")
             
-            if st.button("\ud83d\ude80 Sign In", use_container_width=True):
+            if st.button("🚀 Sign In", use_container_width=True):
                 if username and password:
                     if load_user_data(username):
                         st.success(f"Welcome back, {st.session_state.user_profile['name']}!")
@@ -1778,7 +1777,7 @@ def caregiver_login_page():
             caregiver_username = st.text_input("Caregiver Username", key="caregiver_connect_username")
             patient_code = st.text_input("Patient Access Code", max_chars=6, key="patient_code")
             
-            if st.button("\ud83d\udd17 Connect", use_container_width=True):
+            if st.button("🔗 Connect", use_container_width=True):
                 if caregiver_username and patient_code:
                     st.info(f"Demo: Connecting {caregiver_username} to patient with code {patient_code}")
                     if load_user_data(caregiver_username):
@@ -1795,7 +1794,7 @@ def caregiver_login_page():
 
 def patient_signup_page():
     """Multi-step patient signup page"""
-    if st.button("\u2190 Back"):
+    if st.button("← Back"):
         if st.session_state.signup_step > 1:
             st.session_state.signup_step -= 1
             st.rerun()
@@ -1805,7 +1804,7 @@ def patient_signup_page():
             st.session_state.signup_data = {}
             st.rerun()
     
-    st.markdown("<h1 style='text-align: center; color: white;'>\ud83d\udcdd Create Patient Account</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: white;'>📝 Create Patient Account</h1>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -1817,13 +1816,13 @@ def patient_signup_page():
         st.markdown(f"<p style='text-align: center; color: white;'>Step {st.session_state.signup_step} of 5</p>", unsafe_allow_html=True)
         
         if st.session_state.signup_step == 1:
-            st.markdown("<h3 style='color: #ffffff;'>  \ud83d\udc64 Basic Information</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  👤 Basic Information</h3>", unsafe_allow_html=True)
             username = st.text_input("Username", value=st.session_state.signup_data.get('username', ''))
             name = st.text_input("Full Name", value=st.session_state.signup_data.get('name', ''))
             age = st.number_input("Age", min_value=1, max_value=120, value=st.session_state.signup_data.get('age', 25))
             password = st.text_input("Password", type="password", value=st.session_state.signup_data.get('password', ''))
             
-            if st.button("Continue \u2192", use_container_width=True):
+            if st.button("Continue →", use_container_width=True):
                 if name and username and password:
                     if user_exists(username):
                         st.error("Username already exists! Please choose another.")
@@ -1838,7 +1837,7 @@ def patient_signup_page():
                     st.warning("Please fill all required fields")
         
         elif st.session_state.signup_step == 2:
-            st.markdown("<h3 style='color: #ffffff;'>  \ud83d\udce7 Email Verification (Optional)</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  📧 Email Verification (Optional)</h3>", unsafe_allow_html=True)
             
             email = st.text_input("Email Address (optional)", value=st.session_state.signup_data.get('email', ''))
             
@@ -1850,13 +1849,13 @@ def patient_signup_page():
                     st.rerun()
             
             with col_b:
-                if st.button("Continue \u2192", use_container_width=True):
+                if st.button("Continue →", use_container_width=True):
                     st.session_state.signup_data['email'] = email
                     st.session_state.signup_step = 3
                     st.rerun()
         
         elif st.session_state.signup_step == 3:
-            st.markdown("<h3 style='color: #ffffff;'>  \ud83c\udfe5 Your Health Conditions</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  🏥 Your Health Conditions</h3>", unsafe_allow_html=True)
             if 'diseases' not in st.session_state.signup_data:
                 st.session_state.signup_data['diseases'] = []
             
@@ -1864,7 +1863,7 @@ def patient_signup_page():
             disease_type = st.selectbox("Type", ["Chronic", "Acute", "Preventive", "Other"], key="disease_type_select")
             disease_notes = st.text_area("Notes (optional)", key="disease_notes_input")
             
-            if st.button("\u2795 Add Disease"):
+            if st.button("➕ Add Disease"):
                 if disease_name:
                     st.session_state.signup_data['diseases'].append({
                         'id': str(len(st.session_state.signup_data['diseases']) + 1),
@@ -1881,16 +1880,16 @@ def patient_signup_page():
                     with col_a:
                         st.markdown(f"- {disease['name']} ({disease['type']})")
                     with col_b:
-                        if st.button("\ud83d\uddd1\ufe0f", key=f"del_disease_{i}"):
+                        if st.button("🗑️", key=f"del_disease_{i}"):
                             st.session_state.signup_data['diseases'].pop(i)
                             st.rerun()
             
-            if st.button("Continue \u2192", use_container_width=True, key="continue_from_diseases"):
+            if st.button("Continue →", use_container_width=True, key="continue_from_diseases"):
                 st.session_state.signup_step = 4
                 st.rerun()
         
         elif st.session_state.signup_step == 4:
-            st.markdown("<h3 style='color: #ffffff;'>\ud83d\udc8a Your Medications</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>💊 Your Medications</h3>", unsafe_allow_html=True)
             
             if 'medications' not in st.session_state.signup_data:
                 st.session_state.signup_data['medications'] = []
@@ -1908,7 +1907,7 @@ def patient_signup_page():
                 "Every 12 hours", "As needed", "Weekly", "Monthly"
             ], key="frequency_select")
             
-            st.markdown("<h3 style='color: #ffffff;'>\u23f0 Schedule Times</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>⏰ Schedule Times</h3>", unsafe_allow_html=True)
             
             default_times = get_custom_medication_times(frequency.lower().replace(' ', '-'))
             reminder_times_input = []
@@ -1929,7 +1928,7 @@ def patient_signup_page():
             
             color = st.selectbox("Color", ["Blue", "Green", "Purple", "Pink", "Orange", "Red", "Yellow", "Indigo"], key="color_select")
             
-            if st.button("\u2795 Add Medication"):
+            if st.button("➕ Add Medication"):
                 if med_name and dosage_amount:
                     med_data = {
                         'id': len(st.session_state.signup_data['medications']) + 1,
@@ -1955,7 +1954,7 @@ def patient_signup_page():
                         times_str = med.get('reminder_times', [med['time']])
                         st.markdown(f"- {med['name']} ({med['dosageAmount']}) at {', '.join([format_time(t) for t in times_str])}")
                     with col_b:
-                        if st.button("\ud83d\uddd1\ufe0f", key=f"del_med_{i}"):
+                        if st.button("🗑️", key=f"del_med_{i}"):
                             st.session_state.signup_data['medications'].pop(i)
                             st.rerun()
             
@@ -1965,12 +1964,12 @@ def patient_signup_page():
                     st.session_state.signup_step = 5
                     st.rerun()
             with col_cont:
-                if st.button("Continue \u2192", use_container_width=True, key="continue_from_medications"):
+                if st.button("Continue →", use_container_width=True, key="continue_from_medications"):
                     st.session_state.signup_step = 5
                     st.rerun()
         
         elif st.session_state.signup_step == 5:
-            st.markdown("<h3 style='color: #ffffff;'>  \u2705 Review Your Information</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #ffffff;'>  ✅ Review Your Information</h3>", unsafe_allow_html=True)
             st.markdown(f"**Name:** {st.session_state.signup_data.get('name')}")
             st.markdown(f"**Username:** {st.session_state.signup_data.get('username')}")
             st.markdown(f"**Age:** {st.session_state.signup_data.get('age')}")
@@ -1981,7 +1980,7 @@ def patient_signup_page():
             st.markdown(f"**Diseases:** {len(st.session_state.signup_data.get('diseases', []))}")
             st.markdown(f"**Medications:** {len(st.session_state.signup_data.get('medications', []))}")
             
-            if st.button("\ud83c\udf89 Complete Registration", use_container_width=True):
+            if st.button("🎉 Complete Registration", use_container_width=True):
                 st.session_state.user_profile = {
                     'name': st.session_state.signup_data.get('name'),
                     'username': st.session_state.signup_data.get('username'),
@@ -2006,11 +2005,11 @@ def patient_signup_page():
 
 def caregiver_signup_page():
     """Caregiver signup page"""
-    if st.button("\u2190 Back"):
+    if st.button("← Back"):
         st.session_state.page = 'caregiver_login'
         st.rerun()
     
-    st.markdown("<h1 style='text-align: center; color: white;'>\ud83e\udd1d Caregiver Registration</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: white;'>🤝 Caregiver Registration</h1>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -2037,7 +2036,7 @@ def caregiver_signup_page():
         
         notes = st.text_area("Additional Notes (optional)", key="cg_notes")
         
-        if st.button("\u2705 Complete Registration", use_container_width=True):
+        if st.button("✅ Complete Registration", use_container_width=True):
             if name and username and password and relationship and experience:
                 if user_exists(username):
                     st.error("Username already exists! Please choose another.")
@@ -2068,7 +2067,7 @@ def dashboard_overview_tab(age_category):
     """Enhanced dashboard overview with individual dose tracking and filter"""
     current_date, current_time = get_current_datetime_display()
     
-    st.markdown("<h3 style='color: #ffffff;'>\ud83d\udcca Your Health Overview</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>📊 Your Health Overview</h3>", unsafe_allow_html=True)
     
     # Date/Time Display
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -2153,7 +2152,7 @@ def dashboard_overview_tab(age_category):
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Mascot Section with EMOJI instead of image
-    time_of_day = get_time_of_day().lower().replace('\ud83d\udc4b ', '')
+    time_of_day = get_time_of_day().lower().replace('👋 ', '')
     mascot_message = get_mascot_message(adherence, time_of_day)
     mascot_emoji = get_mascot_emoji(st.session_state.turtle_mood)
     
@@ -2175,7 +2174,7 @@ def dashboard_overview_tab(age_category):
     # Sound Toggle
     col_sound_left, col_sound_right = st.columns([4, 1])
     with col_sound_right:
-        if st.button("\ud83d\udd0a" if st.session_state.sound_enabled else "\ud83d\udd07", use_container_width=True):
+        if st.button("🔊" if st.session_state.sound_enabled else "🔇", use_container_width=True):
             st.session_state.sound_enabled = not st.session_state.sound_enabled
             st.rerun()
     
@@ -2187,7 +2186,7 @@ def dashboard_overview_tab(age_category):
         if st.session_state.sound_enabled:
             play_reminder_sound()
         st.markdown("<div class='reminder-due-banner'>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='color: #991b1b; margin-top: 0;'>\ud83d\udd14 MEDICATION DUE NOW!</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #991b1b; margin-top: 0;'>🔔 MEDICATION DUE NOW!</h3>", unsafe_allow_html=True)
         st.markdown(f"<p style='color: #991b1b;'>The following dose(s) are due:</p>", unsafe_allow_html=True)
         for dose in due_doses:
             color_hex = get_medication_color_hex(dose.get('color', 'blue'))
@@ -2197,13 +2196,13 @@ def dashboard_overview_tab(age_category):
                     <div class='color-dot' style='background-color: {color_hex};'></div>
                     <div>
                         <strong>{dose['medication_name']}</strong> ({dose['dosage_amount']})
-                        <br><small>\u23f0 Due Now: {format_time(dose['time'])}</small>
+                        <br><small>⏰ Due Now: {format_time(dose['time'])}</small>
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
             
-            if st.button("\u2713 Take Now", key=f"take_due_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
+            if st.button("✓ Take Now", key=f"take_due_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
                 for med in st.session_state.medications:
                     if med['id'] == dose['medication_id']:
                         # Add this specific dose to taken_doses
@@ -2227,13 +2226,13 @@ def dashboard_overview_tab(age_category):
                         st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
     else:
-        st.info("\ud83c\udf89 No medications due right now!")
+        st.info("🎉 No medications due right now!")
     
     # FIXED: UPCOMING DOSE REMINDER (30 minutes before)
     has_upcoming, upcoming_dose, time_to_take = check_upcoming_reminders(upcoming_doses)
     if has_upcoming and time_to_take > 0:
         st.markdown("<div class='reminder-banner'>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='color: #92400e; margin-top: 0;'>\u23f0 Upcoming Reminder</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color: #92400e; margin-top: 0;'>⏰ Upcoming Reminder</h3>", unsafe_allow_html=True)
         st.markdown(f"""
         <p style='color: #92400e;'>
             <strong>{upcoming_dose['medication_name']}</strong> ({upcoming_dose['dosage_amount']}) 
@@ -2266,22 +2265,22 @@ def dashboard_overview_tab(age_category):
         
         if all_taken:
             status_class = "taken"
-            section_header = "\u2705 Taken Medications"
+            section_header = "✅ Taken Medications"
         elif any_taken:
             # Partially taken - show as upcoming/missed depending on remaining
             remaining = [d for d in med_doses if not d['taken']]
             if remaining and remaining[0]['time'] >= datetime.now().strftime("%H:%M"):
                 status_class = "upcoming"
-                section_header = "\u23f0 Upcoming Medications"
+                section_header = "⏰ Upcoming Medications"
             else:
                 status_class = "missed"
-                section_header = "\u274c Missed Medications"
+                section_header = "❌ Missed Medications"
         elif med_doses and med_doses[0]['time'] >= datetime.now().strftime("%H:%M"):
             status_class = "upcoming"
-            section_header = "\u23f0 Upcoming Medications"
+            section_header = "⏰ Upcoming Medications"
         else:
             status_class = "missed"
-            section_header = "\u274c Missed Medications"
+            section_header = "❌ Missed Medications"
         
         # Only show section header once per status
         if f"header_{status_class}" not in st.session_state:
@@ -2320,7 +2319,7 @@ def dashboard_overview_tab(age_category):
                     <div class='color-dot' style='background-color: {color_hex};'></div>
                     <div>
                         <strong>{dose['medication_name']}</strong> ({dose['dosage_amount']})
-                        <br><small>\u23f0 {time_remaining}</small>
+                        <br><small>⏰ {time_remaining}</small>
                     </div>
                 </div>
             </div>
@@ -2329,7 +2328,7 @@ def dashboard_overview_tab(age_category):
             col1, col2 = st.columns([4, 1])
             with col2:
                 if dose['taken']:
-                    if st.button("\u21a9\ufe0f Undo", key=f"undo_dose_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
+                    if st.button("↩️ Undo", key=f"undo_dose_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
                         for m in st.session_state.medications:
                             if m['id'] == dose['medication_id']:
                                 today = datetime.now().strftime("%Y-%m-%d")
@@ -2338,7 +2337,7 @@ def dashboard_overview_tab(age_category):
                                 save_user_data()
                                 st.rerun()
                 else:
-                    if st.button("\u2713 Take", key=f"take_dose_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
+                    if st.button("✓ Take", key=f"take_dose_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
                         for m in st.session_state.medications:
                             if m['id'] == dose['medication_id']:
                                 today = datetime.now().strftime("%Y-%m-%d")
@@ -2379,11 +2378,11 @@ def dashboard_overview_tab(age_category):
 
 def medications_tab():
     """Medications tab content"""
-    st.markdown("<h3 style='color: #ffffff;'>\ud83d\udc8a Your Medications</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>💊 Your Medications</h3>", unsafe_allow_html=True)
     
     if st.session_state.editing_medication:
         med_to_edit = st.session_state.editing_medication
-        st.markdown("<h4 style='color: #ffffff;'>\u270f\ufe0f Edit Medication</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color: #ffffff;'>✏️ Edit Medication</h4>", unsafe_allow_html=True)
         
         with st.form("edit_medication_form"):
             col1, col2 = st.columns(2)
@@ -2434,7 +2433,7 @@ def medications_tab():
             
             col_submit, col_cancel = st.columns(2)
             with col_submit:
-                if st.form_submit_button("\ud83d\udcbe Save Changes", use_container_width=True):
+                if st.form_submit_button("💾 Save Changes", use_container_width=True):
                     for med in st.session_state.medications:
                         if med['id'] == med_to_edit['id']:
                             med['name'] = edit_name
@@ -2453,11 +2452,11 @@ def medications_tab():
                     st.rerun()
             
             with col_cancel:
-                if st.form_submit_button("\u274c Cancel", use_container_width=True):
+                if st.form_submit_button("❌ Cancel", use_container_width=True):
                     st.session_state.editing_medication = None
                     st.rerun()
     
-    with st.expander("\u2795 Add New Medication", expanded=False):
+    with st.expander("➕ Add New Medication", expanded=False):
         col1, col2 = st.columns(2)
         
         with col1:
@@ -2514,7 +2513,7 @@ def medications_tab():
                 
                 conflicts = check_medication_conflicts(st.session_state.medications, new_med)
                 if conflicts:
-                    st.warning(f"\u26a0\ufe0f Time conflict detected with: {', '.join(conflicts)}. Medications are scheduled close together.")
+                    st.warning(f"⚠️ Time conflict detected with: {', '.join(conflicts)}. Medications are scheduled close together.")
                 
                 st.session_state.medications.append(new_med)
                 save_user_data()
@@ -2574,7 +2573,7 @@ def medications_tab():
                     <div class='color-dot' style='background-color: {color_hex};'></div>
                     <div>
                         <strong>Dose at {format_time(dose['time'])}</strong>
-                        {' \u2713' if dose['taken'] else ''}
+                        {' ✓' if dose['taken'] else ''}
                     </div>
                 </div>
             </div>
@@ -2583,7 +2582,7 @@ def medications_tab():
             col1, col2, col3 = st.columns([3, 1, 1])
             with col2:
                 if dose['taken']:
-                    if st.button("\u21a9\ufe0f Undo", key=f"undo_med_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
+                    if st.button("↩️ Undo", key=f"undo_med_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
                         for m in st.session_state.medications:
                             if m['id'] == dose['medication_id']:
                                 today = datetime.now().strftime("%Y-%m-%d")
@@ -2592,7 +2591,7 @@ def medications_tab():
                                 save_user_data()
                                 st.rerun()
                 else:
-                    if st.button("\u2713 Take", key=f"take_med_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
+                    if st.button("✓ Take", key=f"take_med_{dose['medication_id']}_{dose['dose_index']}", use_container_width=True):
                         for m in st.session_state.medications:
                             if m['id'] == dose['medication_id']:
                                 today = datetime.now().strftime("%Y-%m-%d")
@@ -2615,11 +2614,11 @@ def medications_tab():
                                     show_100_percent_adherence_animation()
                                 st.rerun()
             with col3:
-                if st.button("\u270f\ufe0f", key=f"edit_med_{dose['medication_id']}", help="Edit"):
+                if st.button("✏️", key=f"edit_med_{dose['medication_id']}", help="Edit"):
                     st.session_state.editing_medication = med
                     st.rerun()
                 
-                if st.button("\ud83d\uddd1\ufe0f", key=f"delete_med_{dose['medication_id']}", help="Delete"):
+                if st.button("🗑️", key=f"delete_med_{dose['medication_id']}", help="Delete"):
                     st.session_state.medications = [m for m in st.session_state.medications if m['id'] != dose['medication_id']]
                     save_user_data()
                     st.rerun()
@@ -2631,9 +2630,9 @@ def medications_tab():
 
 def appointments_tab():
     """Appointments tab content"""
-    st.markdown("<h3 style='color: #ffffff;'>\ud83d\udc68\u200d\u2695\ufe0f Doctor Appointments</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>👨‍⚕️ Doctor Appointments</h3>", unsafe_allow_html=True)
     
-    with st.expander("\u2795 Schedule New Appointment", expanded=False):
+    with st.expander("➕ Schedule New Appointment", expanded=False):
         col1, col2 = st.columns(2)
         
         with col1:
@@ -2707,7 +2706,7 @@ def appointments_tab():
             col1, col2, col3 = st.columns([4, 2, 1])
             
             with col1:
-                st.markdown(f"  \ud83d\udc68\u200d\u2695\ufe0f Dr. {appt['doctor']}")
+                st.markdown(f"  👨‍⚕️ Dr. {appt['doctor']}")
                 if appt.get('specialty'):
                     st.markdown(f"**Specialty:** {appt['specialty']}")
                 st.markdown(f"**Date:** {format_date(appt['date'])} ({days} days)" if days >= 0 else f"**Date:** {format_date(appt['date'])} (past)")
@@ -2727,11 +2726,11 @@ def appointments_tab():
                     elif days == 1:
                         st.markdown("**Tomorrow**")
                     else:
-                        st.markdown(f"  \ud83d\udcc5")
+                        st.markdown(f"  📅")
                         st.markdown(f"**In {days} days**")
             
             with col3:
-                if st.button("\ud83d\uddd1\ufe0f", key=f"delete_appt_{appt['id']}", help="Cancel"):
+                if st.button("🗑️", key=f"delete_appt_{appt['id']}", help="Cancel"):
                     st.session_state.appointments = [a for a in st.session_state.appointments if a['id'] != appt['id']]
                     save_user_data()
                     st.rerun()
@@ -2743,9 +2742,9 @@ def appointments_tab():
 
 def side_effects_tab():
     """Side effects tab content"""
-    st.markdown("<h3 style='color: #ffffff;'>\u26a0\ufe0f Report & Track Side Effects</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>⚠️ Report & Track Side Effects</h3>", unsafe_allow_html=True)
     
-    with st.expander("\u2795 Report New Side Effect", expanded=False):
+    with st.expander("➕ Report New Side Effect", expanded=False):
         if not st.session_state.medications:
             st.warning("Please add medications first before reporting side effects.")
         else:
@@ -2765,9 +2764,9 @@ def side_effects_tab():
                 placeholder="Describe the side effect in detail...")
             
             if effect_severity == "Severe":
-                st.error("\u26a0\ufe0f Severe side effects should be reported to your doctor immediately!")
+                st.error("⚠️ Severe side effects should be reported to your doctor immediately!")
             elif effect_severity == "Moderate":
-                st.warning("\u26a0\ufe0f Consider consulting your doctor about this side effect.")
+                st.warning("⚠️ Consider consulting your doctor about this side effect.")
             
             if st.button("Report Side Effect", use_container_width=True, key="report_effect_btn"):
                 if effect_description:
@@ -2786,7 +2785,7 @@ def side_effects_tab():
                     st.success("Side effect reported successfully!")
                     
                     if effect_severity == "Severe":
-                        st.error("\ud83d\udea8 Please contact your doctor as soon as possible!")
+                        st.error("🚨 Please contact your doctor as soon as possible!")
                     
                     st.rerun()
                 else:
@@ -2860,7 +2859,7 @@ def side_effects_tab():
                 """, unsafe_allow_html=True)
             
             with col3:
-                if st.button("\ud83d\uddd1\ufe0f", key=f"delete_effect_{effect['id']}", help="Remove"):
+                if st.button("🗑️", key=f"delete_effect_{effect['id']}", help="Remove"):
                     st.session_state.side_effects = [e for e in st.session_state.side_effects if e['id'] != effect['id']]
                     save_user_data()
                     st.rerun()
@@ -2871,34 +2870,34 @@ def side_effects_tab():
         if severity_filter != "All":
             st.info(f"No {severity_filter.lower()} side effects reported. That's good!")
         else:
-            st.success("No side effects reported. Great job! \ud83c\udf89")
+            st.success("No side effects reported. Great job! 🎉")
 
 def achievements_tab():
     """Achievements tab content"""
-    st.markdown("<h3 style='color: #ffffff;'>\ud83c\udfc6 Your Achievements & Badges</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>🏆 Your Achievements & Badges</h3>", unsafe_allow_html=True)
     
     achievements_list = [
         {'id': 'first_step', 'name': 'First Step', 'description': 'Created your MedTimer account',
-         'icon': '\ud83c\udfaf', 'earned': True, 'category': 'Getting Started'},
+         'icon': '🎯', 'earned': True, 'category': 'Getting Started'},
         {'id': 'first_medication', 'name': 'Medicine Cabinet', 'description': 'Added your first medication',
-         'icon': '\ud83d\udc8a', 'earned': len(st.session_state.medications) >= 1, 'category': 'Medications'},
+         'icon': '💊', 'earned': len(st.session_state.medications) >= 1, 'category': 'Medications'},
         {'id': 'med_master', 'name': 'Med Master', 'description': 'Added 5 or more medications',
-         'icon': '\ud83c\udf93', 'earned': len(st.session_state.medications) >= 5, 'category': 'Medications'},
+         'icon': '🎓', 'earned': len(st.session_state.medications) >= 5, 'category': 'Medications'},
         {'id': 'perfect_day', 'name': 'Perfect Day', 'description': 'Took all medications on time today',
-         'icon': '\u2b50', 'earned': calculate_adherence(st.session_state.medications) >= 100 and len(st.session_state.medications) > 0,
+         'icon': '⭐', 'earned': calculate_adherence(st.session_state.medications) >= 100 and len(st.session_state.medications) > 0,
          'category': 'Adherence'},
         {'id': 'health_tracker', 'name': 'Health Tracker', 'description': 'Scheduled 3 doctor appointments',
-         'icon': '\ud83d\udcc5', 'earned': len(st.session_state.appointments) >= 3, 'category': 'Appointments'},
+         'icon': '📅', 'earned': len(st.session_state.appointments) >= 3, 'category': 'Appointments'},
         {'id': 'appointment_keeper', 'name': 'Appointment Keeper', 'description': 'Scheduled your first appointment',
-         'icon': '\ud83d\udc68\u200d\u2695\ufe0f', 'earned': len(st.session_state.appointments) >= 1, 'category': 'Appointments'},
+         'icon': '👨‍⚕️', 'earned': len(st.session_state.appointments) >= 1, 'category': 'Appointments'},
         {'id': 'week_warrior', 'name': 'Week Warrior', 'description': 'Maintained 7 day adherence streak',
-         'icon': '\ud83d\udd25', 'earned': False, 'category': 'Streaks'},
+         'icon': '🔥', 'earned': False, 'category': 'Streaks'},
         {'id': 'side_effect_reporter', 'name': 'Health Advocate', 'description': 'Reported a side effect',
-         'icon': '\u26a0\ufe0f', 'earned': len(st.session_state.side_effects) >= 1, 'category': 'Health Monitoring'},
-        {'id': 'turtle_friend', 'name': 'Turtle's Best Friend', 'description': 'Made your turtle companion happy',
-         'icon': '\ud83d\udc22', 'earned': st.session_state.turtle_mood in ['happy', 'excited', 'celebrating'], 'category': 'Fun'},
+         'icon': '⚠️', 'earned': len(st.session_state.side_effects) >= 1, 'category': 'Health Monitoring'},
+        {'id': 'turtle_friend', 'name': 'Turtle\'s Best Friend', 'description': 'Made your turtle companion happy',
+         'icon': '🐢', 'earned': st.session_state.turtle_mood in ['happy', 'excited', 'celebrating'], 'category': 'Fun'},
         {'id': 'consistency_king', 'name': 'Consistency King/Queen', 'description': 'Achieve 100% adherence rate',
-         'icon': '\ud83d\udc51', 'earned': calculate_adherence(st.session_state.medications) >= 100 and len(st.session_state.medications) > 0,
+         'icon': '👑', 'earned': calculate_adherence(st.session_state.medications) >= 100 and len(st.session_state.medications) > 0,
          'category': 'Adherence'}
     ]
     
@@ -2909,7 +2908,7 @@ def achievements_tab():
     st.markdown(f"""
     <div style='text-align: center; padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                 border-radius: 16px; color: white; margin-bottom: 24px;'>
-        <h2 style='color: white; margin: 0;'>\ud83c\udfaf {earned_count} / {total_count} Achievements Unlocked</h2>
+        <h2 style='color: white; margin: 0;'>🎯 {earned_count} / {total_count} Achievements Unlocked</h2>
         <p style='font-size: 18px; margin-top: 8px;'>{progress_pct:.0f}% Complete</p>
     </div>
     """, unsafe_allow_html=True)
@@ -2927,12 +2926,12 @@ def achievements_tab():
                 opacity = "1.0"
                 border_color = "#10b981"
                 bg_gradient = "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)"
-                status = '<span style="color: #10b981; font-weight: 700;">\u2705 Earned</span>'
+                status = '<span style="color: #10b981; font-weight: 700;">✅ Earned</span>'
             else:
                 opacity = "0.6"
                 border_color = "#e5e7eb"
                 bg_gradient = "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%)"
-                status = '<span style="color: #6b7280; font-weight: 600;">\ud83d\udd12 Locked</span>'
+                status = '<span style="color: #6b7280; font-weight: 600;">🔒 Locked</span>'
             
             st.markdown(f"""
             <div style='text-align: center; padding: 20px; background: {bg_gradient}; 
@@ -2948,7 +2947,7 @@ def achievements_tab():
 
 def reports_tab():
     """Reports tab content"""
-    st.markdown("<h3 style='color: #ffffff;'>\ud83d\udce4 Generate & Download Health Reports</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>📤 Generate & Download Health Reports</h3>", unsafe_allow_html=True)
     
     report_type = st.selectbox("Report Type", [
         "Complete Health Report",
@@ -2969,7 +2968,7 @@ def reports_tab():
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    if st.button("\ud83d\udcc4 Generate Report", use_container_width=True):
+    if st.button("📄 Generate Report", use_container_width=True):
         profile = st.session_state.user_profile
         
         report_data = {
@@ -2988,7 +2987,7 @@ def reports_tab():
             st.success("PDF report generated successfully!")
             
             st.download_button(
-                label="\u2b07\ufe0f Download PDF Report",
+                label="⬇️ Download PDF Report",
                 data=pdf_content,
                 file_name=f"medtimer_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf",
                 mime="application/pdf",
@@ -3015,15 +3014,13 @@ MEDICATIONS ({len(st.session_state.medications)})
 """
             
             if report_format == "CSV":
-                report += "Name,Dosage,Type,Frequency,Times,Status\
-"
+                report += "Name,Dosage,Type,Frequency,Times,Status\n"
                 for med in st.session_state.medications:
                     times = med.get('reminder_times', [med.get('time')])
                     taken = med.get('taken_doses', [])
                     today_taken = [t for t in taken if t.get('date') == datetime.now().strftime('%Y-%m-%d')]
                     status = f"{len(today_taken)}/{len(times)} taken"
-                    report += f"{med['name']},{med['dosageAmount']},{med['dosageType']},{med['frequency']},{', '.join([format_time(t) for t in times])},{status}\
-"
+                    report += f"{med['name']},{med['dosageAmount']},{med['dosageType']},{med['frequency']},{', '.join([format_time(t) for t in times])},{status}\n"
             else:
                 for i, med in enumerate(st.session_state.medications, 1):
                     times = med.get('reminder_times', [med.get('time')])
@@ -3084,7 +3081,7 @@ Generated by MedTimer - Your Medication Management Companion
             filename = f"medtimer_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{file_extension}"
             
             st.download_button(
-                label="\u2b07\ufe0f Download Report",
+                label="⬇️ Download Report",
                 data=report,
                 file_name=filename,
                 mime="text/plain" if report_format != "CSV" else "text/csv",
@@ -3095,7 +3092,7 @@ Generated by MedTimer - Your Medication Management Companion
 
 def analytics_tab(age_category):
     """Analytics tab with comprehensive graphs"""
-    st.markdown("<h3 style='color: #ffffff;'>\ud83d\udcca Medication Analytics & Insights</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff;'>📊 Medication Analytics & Insights</h3>", unsafe_allow_html=True)
     
     st.markdown("<h4 style='color: #ffffff;'> # Adherence Trend</h4>", unsafe_allow_html=True)
     st.plotly_chart(
@@ -3134,7 +3131,7 @@ def patient_dashboard_page():
     col1, col2, col3 = st.columns([2, 4, 2])
     
     with col1:
-        st.markdown(f"<h2 style='color: #ffffff;'>\ud83d\udc4b {greeting}, {st.session_state.user_profile['name']}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style='color: #ffffff;'>👋 {greeting}, {st.session_state.user_profile['name']}</h2>", unsafe_allow_html=True)
     
     with col2:
         mascot_emoji = get_mascot_emoji(st.session_state.turtle_mood)
@@ -3145,15 +3142,15 @@ def patient_dashboard_page():
         """, unsafe_allow_html=True)
     
     with col3:
-        if st.button("\ud83d\udeaa Logout", use_container_width=True):
+        if st.button("🚪 Logout", use_container_width=True):
             save_user_data()
             clear_session_data()
             st.session_state.page = 'account_type_selection'
             st.rerun()
     
     tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
-        "\ud83d\udcca Dashboard", "\ud83d\udc8a Medications", "\ud83d\udc68\u200d\u2695\ufe0f Appointments",
-        "\u26a0\ufe0f Side Effects", "\ud83c\udfc6 Achievements", "\ud83d\udce5 Reports", "\ud83d\udcc8 Analytics"
+        "📊 Dashboard", "💊 Medications", "👨‍⚕️ Appointments",
+        "⚠️ Side Effects", "🏆 Achievements", "📥 Reports", "📈 Analytics"
     ])
     
     with tab1:
@@ -3187,16 +3184,16 @@ def caregiver_dashboard_page():
     col1, col2 = st.columns([4, 1])
     
     with col1:
-        st.markdown(f"<h1 style='color: #ffffff;'>\ud83e\udd1d Caregiver Dashboard - {st.session_state.user_profile['name']}</h1>", unsafe_allow_html=True)
+        st.markdown(f"<h1 style='color: #ffffff;'>🤝 Caregiver Dashboard - {st.session_state.user_profile['name']}</h1>", unsafe_allow_html=True)
     
     with col2:
-        if st.button("\ud83d\udeaa Logout", use_container_width=True):
+        if st.button("🚪 Logout", use_container_width=True):
             save_user_data()
             clear_session_data()
             st.session_state.page = 'account_type_selection'
             st.rerun()
     
-    tab1, tab2, tab3, tab4 = st.tabs(["\ud83d\udc65 My Patients", "\ud83d\udcca Overview", "\ud83d\udd17 Connect", "\u2699\ufe0f Settings"])
+    tab1, tab2, tab3, tab4 = st.tabs(["👥 My Patients", "📊 Overview", "🔗 Connect", "⚙️ Settings"])
     
     with tab1:
         if 'connected_patients' not in st.session_state:
@@ -3209,7 +3206,7 @@ def caregiver_dashboard_page():
                 col1, col2, col3 = st.columns([3, 2, 1])
                 
                 with col1:
-                    st.markdown(f"  \ud83d\udc64 {patient['name']}")
+                    st.markdown(f"  👤 {patient['name']}")
                     st.markdown(f"**Age:** {patient['age']}")
                     st.markdown(f"**Access Code:** {patient['access_code']}")
                     st.markdown(f"**Last Contact:** {patient.get('last_contact', 'N/A')}")
@@ -3219,7 +3216,7 @@ def caregiver_dashboard_page():
                     st.metric("Adherence", f"{patient.get('adherence', 0)}%")
                 
                 with col3:
-                    if st.button("\ud83d\uddd1\ufe0f Disconnect", key=f"disconnect_patient_{patient['id']}", use_container_width=True):
+                    if st.button("🗑️ Disconnect", key=f"disconnect_patient_{patient['id']}", use_container_width=True):
                         st.session_state.connected_patients = [p for p in st.session_state.connected_patients if p['id'] != patient['id']]
                         save_user_data()
                         st.rerun()
@@ -3229,7 +3226,7 @@ def caregiver_dashboard_page():
         else:
             st.info("You haven't connected to any patients yet. Use the Connect tab to link with a patient using their access code.")
             
-            if st.button("\u2795 Add Demo Patient", use_container_width=True):
+            if st.button("➕ Add Demo Patient", use_container_width=True):
                 demo_patient = {
                     'id': 1,
                     'name': 'Demo Patient',
@@ -3298,7 +3295,7 @@ def caregiver_dashboard_page():
         
         with col2:
             st.markdown("<br>", unsafe_allow_html=True)
-            if st.button("\ud83d\udd17 Connect", use_container_width=True):
+            if st.button("🔗 Connect", use_container_width=True):
                 if patient_code and len(patient_code) == 6:
                     st.success(f"Successfully connected to patient with code: {patient_code}")
                     st.info("In a full implementation, this would fetch and link patient data.")
