@@ -2191,10 +2191,9 @@ def dashboard_overview_tab(age_category):
     
     st.markdown("<br>", unsafe_allow_html=True)
     if meds_to_show:
-    for med in meds_to_show:
-        color_hex = get_medication_color_hex(med.get('color', 'blue'))
-
-        st.markdown(f"""
+        for med in meds_to_show:
+            color_hex = get_medication_color_hex(med.get('color', 'blue'))
+            st.markdown(f"""
         <div class='checklist-item'>
             <div style='display: flex; align-items: center; flex: 1;'>
                 <div class='color-dot' style='background-color: {color_hex};'></div>
@@ -2208,8 +2207,8 @@ def dashboard_overview_tab(age_category):
             </div>
         </div>
         """, unsafe_allow_html=True)
-else:
-    st.info("No medications in this category.")
+    else:
+        st.info("No medications in this category.")
 
 
     
@@ -3254,6 +3253,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
