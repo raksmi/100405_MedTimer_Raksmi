@@ -2191,8 +2191,11 @@ def dashboard_overview_tab(age_category):
         st.markdown("</div>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
-    for med in meds_to_show:
-        times = med.get("reminder_times") or [med.get("time")]
+    for item in doses_to_show:
+        med = item["med"]
+        t = item["time"]
+        taken = item["taken"]
+
 
     for t in times:
         taken = t in med.get('taken_times', [])
@@ -2203,7 +2206,7 @@ def dashboard_overview_tab(age_category):
         <div class='checklist-item {status_class}'>
             <div style='display: flex; align-items: center; flex: 1;'>
                 <div>
-                    <strong>{med['name']}</strong> ({med['dosageAmount']})
+                    <strong>{med['name']}</strong> ({med['dosageAmount']}) <br> <small>⏰ {format_time(t)}</small> ({med['dosageAmount']})
                     <br>
                     <small>⏰ {format_time(t)}</small>
                 </div>
@@ -2419,7 +2422,7 @@ def medications_tab():
                     <div style='display: flex; align-items: center; flex: 1;'>
                         <div class='color-dot' style='background-color: {color_hex};'></div>
                         <div>
-                            <strong>{med['name']}</strong> ({med['dosageAmount']})
+                            <strong>{med['name']}</strong> ({med['dosageAmount']}) <br> <small>⏰ {format_time(t)}</small> ({med['dosageAmount']})
                             <br><small>⏰ Scheduled: {format_time(med.get('time', 'N/A'))} | {med.get('frequency', '').replace('-', ' ').title()}</small>
                             {f'<br><small>📝 {med.get("instructions", "")}</small>' if med.get('instructions') else ''}
                         </div>
@@ -3262,6 +3265,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
