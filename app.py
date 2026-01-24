@@ -450,7 +450,6 @@ def check_due_medications(medications):
     return due_medications
 
 def calculate_adherence(medications):
-    """Calculate medication adherence percentage (dose-based)"""
     if not medications:
         return 0
 
@@ -460,11 +459,12 @@ def calculate_adherence(medications):
     for med in medications:
         times = med.get('reminder_times', [med.get('time')])
         total_doses += len(times)
-        
+
         if med.get('taken_today', False):
             taken_doses += len(times)
 
-    return (taken_doses / total_doses * 100) if total_doses > 0 else 0
+    return round((taken_doses / total_doses) * 100, 2) if total_doses > 0 else 0
+
 
 def get_mascot_emoji(mood):
     """Get emoji mascot based on mood"""
@@ -3338,4 +3338,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
