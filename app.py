@@ -27,19 +27,21 @@ def init_database():
     """Initialize SQLite database with all tables"""
     conn = sqlite3.connect('medtimer.db', check_same_thread=False)
     c = conn.cursor()
-    
-    c.execute('''CREATE TABLE IF NOT EXISTS users
-                 (username TEXT PRIMARY KEY,
-                  name TEXT,
-                  age INTEGER,
-                  email TEXT,
-                  password TEXT,
-                  user_type TEXT,
-                  phone TEXT,
-                  relationship TEXT,
-                  experience TEXT,
-                  notes TEXT,
-                  created_at TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS medications
+             (id INTEGER PRIMARY KEY AUTOINCREMENT,
+              username TEXT,
+              name TEXT,
+              dosage_type TEXT,
+              dosage_amount TEXT,
+              frequency TEXT,
+              time TEXT,
+              reminder_times TEXT,
+              color TEXT,
+              instructions TEXT,
+              taken_today INTEGER,
+              created_at TEXT,
+              FOREIGN KEY(username) REFERENCES users(username))''')
+
     
     c.execute('''CREATE TABLE IF NOT EXISTS diseases
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -612,12 +614,22 @@ def save_user_data():
         c.execute('DELETE FROM medications WHERE username = ?', (username,))
         for med in st.session_state.medications:
             c.execute('''INSERT INTO medications 
-                         (username, name, dosage_type, dosage_amount, frequency, time, color, instructions, taken_today, created_at)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                     (username, med.get('name'), med.get('dosageType'), med.get('dosageAmount'),
-                      med.get('frequency'), med.get('time'), med.get('color'),
-                      med.get('instructions', ''), int(med.get('taken_today', False)),
-                      med.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
+(username, name, dosage_type, dosage_amount, frequency, time, reminder_times, color, instructions, taken_today, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+(
+    username,
+    med.get('name'),
+    med.get('dosageType'),
+    med.get('dosageAmount'),
+    med.get('frequency'),
+    med.get('time'),
+    json.dumps(med.get('reminder_times', [med.get('time')])),
+    med.get('color'),
+    med.get('instructions', ''),
+    int(med.get('taken_today', False)),
+    med.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+))
+
         
         c.execute('DELETE FROM appointments WHERE username = ?', (username,))
         for appt in st.session_state.appointments:
@@ -686,18 +698,20 @@ def load_user_data(username):
         st.session_state.medications = []
         for med in meds:
             st.session_state.medications.append({
-                'id': med[0],
-                'name': med[2],
-                'dosageType': med[3],
-                'dosageAmount': med[4],
-                'frequency': med[5],
-                'time': med[6],
-                'color': med[7],
-                'instructions': med[8],
-                'taken_today': bool(med[9]),
-                'taken_times': [],
-                'created_at': med[10]
-            })
+    'id': med[0],
+    'name': med[2],
+    'dosageType': med[3],
+    'dosageAmount': med[4],
+    'frequency': med[5],
+    'time': med[6],
+    'reminder_times': json.loads(med[7]) if med[7] else [med[6]],
+    'color': med[8],
+    'instructions': med[9],
+    'taken_today': bool(med[10]),
+    'taken_times': [],
+    'created_at': med[11]
+})
+
         
         c.execute('SELECT * FROM appointments WHERE username = ?', (username,))
         appts = c.fetchall()
@@ -3324,3 +3338,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
