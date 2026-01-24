@@ -1,3 +1,4 @@
+
 import streamlit as st
 import sqlite3
 import json
@@ -242,7 +243,7 @@ def play_notification_sound():
     st.markdown(audio_html, unsafe_allow_html=True)
 
 def show_100_percent_adherence_animation():
-    """Show celebration animation when 100% adherence is achieved"""
+    """Show celebration animation when 100% adherence is achieved - ENHANCED VERSION"""
     animation_html = """
     <style>
     @keyframes confetti-fall {
@@ -260,13 +261,31 @@ def show_100_percent_adherence_animation():
         50% { transform: rotate(5deg); }
     }
     
+    @keyframes star-burst {
+        0% { transform: scale(0) rotate(0deg); opacity: 1; }
+        50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+        100% { transform: scale(2) rotate(360deg); opacity: 0; }
+    }
+    
+    @keyframes text-pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        50% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+    
+    @keyframes rainbow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
     .confetti {
         position: fixed;
         width: 10px;
         height: 10px;
         top: -10px;
         animation: confetti-fall 3s linear forwards;
-        z-index: 9999;
+        z-index: 99999;
         pointer-events: none;
     }
     
@@ -277,18 +296,96 @@ def show_100_percent_adherence_animation():
     .trophy-celebrate {
         animation: celebrate 0.5s ease-in-out infinite;
     }
+    
+    .celebration-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99998;
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .celebration-content {
+        text-align: center;
+        animation: text-pop 0.8s ease-out;
+    }
+    
+    .celebration-title {
+        font-size: 72px;
+        font-weight: 900;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #fd79a8);
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: rainbow 3s ease infinite, text-pop 1s ease-out;
+    }
+    
+    .star-burst {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        animation: star-burst 1s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    .celebration-icon {
+        font-size: 150px;
+        animation: celebrate 0.8s ease-in-out infinite, slideIn 0.5s ease-out;
+    }
+    
+    .celebration-subtitle {
+        font-size: 32px;
+        color: white;
+        margin-top: 20px;
+        animation: slideIn 0.7s ease-out;
+    }
+    
+    .celebration-trophy {
+        font-size: 200px;
+        animation: star-burst 1.5s ease-out infinite, celebrate 1s ease-in-out infinite;
+    }
     </style>
+    
+    <div class="celebration-overlay" id="celebrationOverlay">
+        <div class="celebration-content">
+            <div class="celebration-trophy">🏆</div>
+            <div class="celebration-title">100% ADHERENCE!</div>
+            <div class="celebration-subtitle">🎉 PERFECT DAY! ALL MEDICATIONS TAKEN! 🎉</div>
+            <div class="celebration-icon">⭐⭐⭐</div>
+        </div>
+    </div>
     
     <script>
     function createConfetti() {
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#fd79a8', '#a29bfe'];
-        for (let i = 0; i < 100; i++) {
+        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9', '#fd79a8', '#a29bfe', '#ffe66d', '#ff6b6b'];
+        const shapes = ['■', '●', '▲', '★', '♦', '♥'];
+        
+        for (let i = 0; i < 150; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
             confetti.style.left = Math.random() * 100 + 'vw';
             confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
             confetti.style.animationDelay = Math.random() * 2 + 's';
             confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            confetti.style.width = (Math.random() * 10 + 5) + 'px';
+            confetti.style.height = (Math.random() * 10 + 5) + 'px';
+            confetti.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
             document.body.appendChild(confetti);
             
             setTimeout(() => confetti.remove(), 5000);
@@ -296,6 +393,16 @@ def show_100_percent_adherence_animation():
     }
     
     createConfetti();
+    
+    // Auto-hide celebration after 5 seconds
+    setTimeout(function() {
+        const overlay = document.getElementById('celebrationOverlay');
+        if (overlay) {
+            overlay.style.transition = 'opacity 1s ease-out';
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 1000);
+        }
+    }, 5000);
     </script>
     """
     st.markdown(animation_html, unsafe_allow_html=True)
@@ -423,47 +530,68 @@ def update_mascot_mood(adherence):
         st.session_state.turtle_mood = 'worried'
 
 def check_upcoming_reminders(upcoming_meds):
-    """Check for upcoming medications and show reminders"""
+    """Check for upcoming medications and show reminders - ENHANCED"""
     now = datetime.now()
     current_time = now.strftime("%H:%M")
+    
+    reminders_triggered = False
     
     for med in upcoming_meds[:3]:
         med_time = datetime.strptime(med['time'], "%H:%M")
         time_diff = (med_time - now).total_seconds() / 60 
         
+        # Check if within 30 minutes
         if 0 < time_diff <= 30:
-            st.warning(f"⏰ **Upcoming Reminder:** {med['name']} ({med['dosageAmount']}) at {med['time']} - Take in {int(time_diff)} minutes!")
-            return True
-    return False
+            if st.session_state.sound_enabled:
+                play_reminder_sound()
+            
+            # Create attention-grabbing reminder
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, #fff7ed, #ffedd5);
+                border: 3px solid #f59e0b;
+                border-radius: 16px;
+                padding: 20px;
+                margin: 20px 0;
+                box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+                animation: pulse-glow 1s ease-in-out infinite;
+            ">
+                <h3 style="color: #1f2937; margin: 0 0 10px 0;">⏰ UPCOMING REMINDER</h3>
+                <p style="color: #1f2937; font-size: 18px; margin: 0;">
+                    <strong>{med['name']}</strong> ({med['dosageAmount']}) at {format_time(med['time'])} - 
+                    Take in <strong>{int(time_diff)} minutes</strong>!
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            reminders_triggered = True
+    
+    return reminders_triggered
 
 def check_due_medications(medications):
-    """Check for medications that are due now and trigger reminders"""
+    """Check for medications that are due now and trigger reminders - ENHANCED"""
     now = datetime.now()
     current_time = now.strftime("%H:%M")
     
     due_medications = []
+    
     for med in medications:
         if not med.get('taken_today', False):
             med_time = med.get('time', '00:00')
             
-            med_datetime = datetime.strptime(med_time, "%H:%M").replace(
-                year=now.year, month=now.month, day=now.day
-            )
-            time_diff = abs((now - med_datetime).total_seconds() / 60)
-            
-            if time_diff <= 5:
-                due_medications.append(med)
-            
-            if med.get('reminder_times'):
-                for reminder_time in med['reminder_times']:
-                    reminder_datetime = datetime.strptime(reminder_time, "%H:%M").replace(
-                        year=now.year, month=now.month, day=now.day
-                    )
-                    time_diff = abs((now - reminder_datetime).total_seconds() / 60)
-                    
-                    if time_diff <= 5 and med not in due_medications:
-                        due_medications.append(med)
-                        return due_medications
+            try:
+                med_datetime = datetime.strptime(med_time, "%H:%M").replace(
+                    year=now.year, month=now.month, day=now.day
+                )
+                time_diff = abs((now - med_datetime).total_seconds() / 60)
+                
+                # If medication is due within 5 minutes
+                if time_diff <= 5:
+                    due_medications.append(med)
+            except Exception as e:
+                continue
+    
+    return due_medications
 
 def calculate_adherence(medications):
     """Calculate medication adherence percentage (dose-based)"""
@@ -483,13 +611,14 @@ def calculate_adherence(medications):
     return (taken_doses / total_doses * 100) if total_doses > 0 else 0
 
 def get_mascot_image(mood):
-    mascot_images = {
-        'happy': r"C:\Users\tnvxx\OneDrive\Desktop\sucess.png",
-        'excited': r"C:\Users\tnvxx\OneDrive\Desktop\sucess.png",
-        'neutral': '🐢',
-        'worried': '🐢'
+    """Get emoji for mascot based on mood"""
+    mascot_emojis = {
+        'happy': '😊',
+        'excited': '🤩',
+        'neutral': '😐',
+        'worried': '😟'
     }
-    return mascot_images.get(mood, '🐢')
+    return mascot_emojis.get(mood, '🐢')
 
 def get_severity_color(severity):
     """Get color for severity level"""
@@ -594,6 +723,8 @@ def initialize_session_state():
         st.session_state.show_celebration = False
     if 'previous_adherence' not in st.session_state:
         st.session_state.previous_adherence = 0
+    if 'checklist_tab' not in st.session_state:
+        st.session_state.checklist_tab = 'all'
 
 def save_user_data():
     """Save user data to SQLite database"""
@@ -847,9 +978,10 @@ def clear_session_data():
     st.session_state.editing_medication = None
     st.session_state.show_celebration = False
     st.session_state.previous_adherence = 0
+    st.session_state.checklist_tab = 'all'
 
 def inject_custom_css(age_category='adult'):
-    """Inject custom CSS into Streamlit app with age-based styling"""
+    """Inject custom CSS into Streamlit app with age-based styling - ENHANCED"""
     primary_color = get_primary_color(age_category)
     secondary_color = get_secondary_color(age_category)
     font_size = get_font_size(age_category)
@@ -859,11 +991,11 @@ def inject_custom_css(age_category='adult'):
     <style>
     .stApp {{
         {background_style}
+        min-height: 100vh;
     }}
     
     #MainMenu {{visibility: hidden;}}
     footer {{visibility: hidden;}}
-    header {{visibility: hidden;}}
     
     h1, h2, h3, h4, h5, h6 {{
         font-weight: 800 !important;
@@ -908,7 +1040,7 @@ def inject_custom_css(age_category='adult'):
         justify-content: space-between;
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
-        border-left: 4px solid #f59e0b;
+        border-left: 4px solid #3b82f6;
     }}
     
     .checklist-item:hover {{
@@ -934,6 +1066,11 @@ def inject_custom_css(age_category='adult'):
     .checklist-item.upcoming {{
         border-left: 4px solid #f59e0b;
         background: linear-gradient(to right, #fffbeb, white);
+    }}
+    
+    .checklist-item.scheduled {{
+        border-left: 4px solid #3b82f6;
+        background: linear-gradient(to right, #eff6ff, white);
     }}
     
     .stat-card {{
@@ -1168,6 +1305,78 @@ def inject_custom_css(age_category='adult'):
     .section-taken {{
         background: linear-gradient(135deg, #10b981, #059669);
     }}
+    
+    /* NEW: Tabbed Checklist Styles */
+    .checklist-tabs {{
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 10px;
+    }}
+    
+    .checklist-tab {{
+        padding: 10px 20px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }}
+    
+    .checklist-tab:hover {{
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+    }}
+    
+    .checklist-tab.active {{
+        background: white;
+        color: {primary_color};
+        border-color: {primary_color};
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }}
+    
+    .checklist-tab-all.active {{
+        color: #3b82f6;
+        border-color: #3b82f6;
+    }}
+    
+    .checklist-tab-missed.active {{
+        color: #ef4444;
+        border-color: #ef4444;
+    }}
+    
+    .checklist-tab-upcoming.active {{
+        color: #f59e0b;
+        border-color: #f59e0b;
+    }}
+    
+    .checklist-tab-taken.active {{
+        color: #10b981;
+        border-color: #10b981;
+    }}
+    
+    .medication-icon {{
+        font-size: 40px;
+        margin-right: 15px;
+    }}
+    
+    .checklist-status-badge {{
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        display: inline-block;
+    }}
+    
+    .checklist-time {{
+        font-size: 16px;
+        font-weight: 600;
+        color: #6b7280;
+    }}
+    
     </style>
     """
     return css
@@ -1963,8 +2172,159 @@ def get_mascot_text_color(mood):
     }
     return colors.get(mood, '#374151')
 
+def display_medication_checklist_with_tabs(medications, age_category):
+    """NEW: Display medication checklist with tabs like the screenshot"""
+    
+    # Categorize medications
+    missed, upcoming, taken = categorize_medications_by_status(medications)
+    
+    # Tab selection using HTML/CSS
+    st.markdown(f"""
+    <div class="checklist-tabs">
+        <div class="checklist-tab checklist-tab-all {'active' if st.session_state.checklist_tab == 'all' else ''}">
+            All ({len(medications)})
+        </div>
+        <div class="checklist-tab checklist-tab-missed {'active' if st.session_state.checklist_tab == 'missed' else ''}">
+            Missed ({len(missed)})
+        </div>
+        <div class="checklist-tab checklist-tab-upcoming {'active' if st.session_state.checklist_tab == 'upcoming' else ''}">
+            Upcoming ({len(upcoming)})
+        </div>
+        <div class="checklist-tab checklist-tab-taken {'active' if st.session_state.checklist_tab == 'taken' else ''}">
+            Taken ({len(taken)})
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Tab buttons for functionality
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button("All", key="tab_all", use_container_width=True):
+            st.session_state.checklist_tab = 'all'
+            st.rerun()
+    with col2:
+        if st.button("Missed", key="tab_missed", use_container_width=True):
+            st.session_state.checklist_tab = 'missed'
+            st.rerun()
+    with col3:
+        if st.button("Upcoming", key="tab_upcoming", use_container_width=True):
+            st.session_state.checklist_tab = 'upcoming'
+            st.rerun()
+    with col4:
+        if st.button("Taken", key="tab_taken", use_container_width=True):
+            st.session_state.checklist_tab = 'taken'
+            st.rerun()
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Display medications based on selected tab
+    display_meds = []
+    
+    if st.session_state.checklist_tab == 'all':
+        display_meds = medications
+    elif st.session_state.checklist_tab == 'missed':
+        display_meds = missed
+    elif st.session_state.checklist_tab == 'upcoming':
+        display_meds = upcoming
+    elif st.session_state.checklist_tab == 'taken':
+        display_meds = taken
+    
+    if not display_meds:
+        st.info(f"No medications in this category.")
+        return
+    
+    # Sort medications by time
+    display_meds.sort(key=lambda x: x.get('time', '00:00'))
+    
+    # Display each medication with enhanced styling
+    for med in display_meds:
+        color_hex = get_medication_color_hex(med.get('color', 'blue'))
+        is_taken = med.get('taken_today', False)
+        
+        # Determine status and styling
+        if is_taken:
+            status_class = "taken"
+            status_text = "✓ Taken"
+            status_color = "#10b981"
+        elif med in missed:
+            status_class = "missed"
+            status_text = "Missed"
+            status_color = "#ef4444"
+        elif med in upcoming:
+            status_class = "upcoming"
+            status_text = "Scheduled"
+            status_color = "#3b82f6"
+        else:
+            status_class = "scheduled"
+            status_text = "Scheduled"
+            status_color = "#3b82f6"
+        
+        st.markdown(f"""
+        <div class='checklist-item {status_class}'>
+            <div style='display: flex; align-items: center; flex: 1;'>
+                <div class='medication-icon' style='color: {color_hex};'>💊</div>
+                <div style='flex: 1;'>
+                    <div style='font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 4px;'>
+                        {med['name']}
+                    </div>
+                    <div style='font-size: 14px; color: #6b7280; margin-bottom: 2px;'>
+                        {med['dosageAmount']} • {med.get('frequency', '').replace('-', ' ').title()}
+                    </div>
+                    <div class='checklist-time'>
+                        ⏰ {format_time(med.get('time', 'N/A'))}
+                    </div>
+                </div>
+                <div style='text-align: right;'>
+                    <span class='checklist-status-badge' style='background: {status_color}; color: white;'>
+                        {status_text}
+                    </span>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Action buttons
+        col1, col2, col3 = st.columns([3, 1, 1])
+        
+        with col2:
+            if not is_taken:
+                if st.button("✓ Take", key=f"take_checklist_{med['id']}", use_container_width=True):
+                    for m in st.session_state.medications:
+                        if m['id'] == med['id']:
+                            m['taken_today'] = True
+                            update_medication_history(med['id'], 'taken')
+                            play_notification_sound()
+                            update_adherence_history()
+                            save_user_data()
+                            
+                            new_adherence = calculate_adherence(st.session_state.medications)
+                            if new_adherence >= 100 and st.session_state.previous_adherence < 100:
+                                st.session_state.previous_adherence = new_adherence
+                                show_100_percent_adherence_animation()
+                            st.rerun()
+            else:
+                if st.button("↩️ Undo", key=f"undo_checklist_{med['id']}", use_container_width=True):
+                    for m in st.session_state.medications:
+                        if m['id'] == med['id']:
+                            m['taken_today'] = False
+                            if 'taken_times' in m:
+                                m['taken_times'] = []
+                            update_adherence_history()
+                            save_user_data()
+                            st.rerun()
+        
+        with col3:
+            if st.button("✏️", key=f"edit_checklist_{med['id']}", help="Edit", use_container_width=True):
+                st.session_state.editing_medication = med
+                st.rerun()
+            
+            if st.button("🗑️", key=f"delete_checklist_{med['id']}", help="Delete", use_container_width=True):
+                st.session_state.medications = [m for m in st.session_state.medications if m['id'] != med['id']]
+                save_user_data()
+                st.rerun()
+
 def dashboard_overview_tab(age_category):
-    """Enhanced dashboard overview with checklist, proper color coding, and separated sections"""
+    """Enhanced dashboard overview with NEW tabbed checklist"""
     current_date, current_time = get_current_datetime_display()
     
     st.markdown("<h3 style='color: #ffffff;'>📊 Your Health Overview</h3>", unsafe_allow_html=True)
@@ -2039,7 +2399,7 @@ def dashboard_overview_tab(age_category):
         box-shadow: 0 6px 12px rgba(0,0,0,0.12);
         text-align: center;
     ">
-        <img src="{mascot_img}" width="90" style="margin-bottom:10px;">
+        <div style="font-size: 90px; margin-bottom:10px;">{mascot_img}</div>
         <p class="mascot-message-text" style="font-size:18px;">
             {mascot_message}
         </p>
@@ -2054,11 +2414,15 @@ def dashboard_overview_tab(age_category):
     
     st.markdown("<br>", unsafe_allow_html=True)
     
+    # Check for due medications - ENHANCED
     due_meds = check_due_medications(st.session_state.medications)
     if due_meds:
         if st.session_state.sound_enabled:
             play_reminder_sound()
-        st.markdown("<div class='section-header section-missed'>🔔 Due Now</div>", unsafe_allow_html=True)
+        
+        st.markdown("<div class='reminder-section'>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color: #1f2937; margin-top: 0;'>🔔 MEDICATIONS DUE NOW!</h3>", unsafe_allow_html=True)
+        
         for med in due_meds:
             color_hex = get_medication_color_hex(med.get('color', 'blue'))
             st.markdown(f"""
@@ -2072,6 +2436,7 @@ def dashboard_overview_tab(age_category):
                 </div>
             </div>
             """, unsafe_allow_html=True)
+            
             if st.button("✓ Take Now", key=f"take_due_{med['id']}_{med['time']}", use_container_width=True):
                 for m in st.session_state.medications:
                     if m['id'] == med['id']:
@@ -2085,107 +2450,23 @@ def dashboard_overview_tab(age_category):
                             st.session_state.previous_adherence = new_adherence
                             show_100_percent_adherence_animation()
                         st.rerun()
+        
+        st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.info("🎉 No medications due right now!")
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    if missed:
-        st.markdown("<div class='section-header section-missed'>❌ Missed Medications</div>", unsafe_allow_html=True)
-        for med in missed:
-            color_hex = get_medication_color_hex(med.get('color', 'blue'))
-            st.markdown(f"""
-            <div class='checklist-item missed'>
-                <div style='display: flex; align-items: center; flex: 1;'>
-                    <div class='color-dot' style='background-color: {color_hex};'></div>
-                    <div>
-                        <strong>{med['name']}</strong> ({med['dosageAmount']})
-                        <br><small>⏰ Scheduled: {format_time(med.get('time', 'N/A'))}</small>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col1, col2 = st.columns([4, 1])
-            with col2:
-                if st.button("✓ Take Now", key=f"take_missed_{med['id']}", use_container_width=True):
-                    for m in st.session_state.medications:
-                        if m['id'] == med['id']:
-                            m['taken_today'] = True
-                            update_medication_history(med['id'], 'taken')
-                            play_notification_sound()
-                            update_adherence_history()
-                            save_user_data()
-                            
-                            new_adherence = calculate_adherence(st.session_state.medications)
-                            if new_adherence >= 100 and st.session_state.previous_adherence < 100:
-                                st.session_state.previous_adherence = new_adherence
-                                show_100_percent_adherence_animation()
-                            st.rerun()
-        st.markdown("<br>", unsafe_allow_html=True)
+    # Check for upcoming reminders - ENHANCED
+    check_upcoming_reminders(upcoming)
     
-    if upcoming:
-        st.markdown("<div class='section-header section-upcoming'>⏰ Upcoming Medications</div>", unsafe_allow_html=True)
-        for med in upcoming:
-            color_hex = get_medication_color_hex(med.get('color', 'blue'))
-            st.markdown(f"""
-            <div class='checklist-item upcoming'>
-                <div style='display: flex; align-items: center; flex: 1;'>
-                    <div class='color-dot' style='background-color: {color_hex};'></div>
-                    <div>
-                        <strong>{med['name']}</strong> ({med['dosageAmount']})
-                        <br><small>⏰ Scheduled: {format_time(med.get('time', 'N/A'))}</small>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col1, col2 = st.columns([4, 1])
-            with col2:
-                if st.button("✓ Take", key=f"take_upcoming_{med['id']}", use_container_width=True):
-                    for m in st.session_state.medications:
-                        if m['id'] == med['id']:
-                            m['taken_today'] = True
-                            update_medication_history(med['id'], 'taken')
-                            play_notification_sound()
-                            update_adherence_history()
-                            save_user_data()
-                            
-                            new_adherence = calculate_adherence(st.session_state.medications)
-                            if new_adherence >= 100 and st.session_state.previous_adherence < 100:
-                                st.session_state.previous_adherence = new_adherence
-                                show_100_percent_adherence_animation()
-                            st.rerun()
-        st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    if taken:
-        st.markdown("<div class='section-header section-taken'>✅ Taken Medications</div>", unsafe_allow_html=True)
-        for med in taken:
-            color_hex = get_medication_color_hex(med.get('color', 'blue'))
-            st.markdown(f"""
-            <div class='checklist-item taken'>
-                <div style='display: flex; align-items: center; flex: 1;'>
-                    <div class='color-dot' style='background-color: {color_hex};'></div>
-                    <div>
-                        <strong>{med['name']}</strong> ({med['dosageAmount']})
-                        <br><small>⏰ Taken at: {format_time(med.get('time', 'N/A'))}</small>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            col1, col2 = st.columns([4, 1])
-            with col2:
-                if st.button("↩️ Undo", key=f"undo_taken_{med['id']}", use_container_width=True):
-                    for m in st.session_state.medications:
-                        if m['id'] == med['id']:
-                            m['taken_today'] = False
-                            if 'taken_times' in m:
-                                m['taken_times'] = []
-                            update_adherence_history()
-                            save_user_data()
-                            st.rerun()
-        st.markdown("<br>", unsafe_allow_html=True)
+    # NEW: Display medication checklist with tabs
+    st.markdown("<h3 style='color: #ffffff;'>💊 Today's Medication Checklist</h3>", unsafe_allow_html=True)
+    display_medication_checklist_with_tabs(st.session_state.medications, age_category)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
@@ -2371,164 +2652,8 @@ def medications_tab():
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns(2)
-    with col1:
-        sort_by = st.selectbox("Sort by", ["Time", "Name", "Type", "Status"], key="sort_meds")
-    with col2:
-        filter_by = st.selectbox("Filter by", ["All", "Taken", "Pending"], key="filter_meds")
-    
-    sorted_meds = st.session_state.medications.copy()
-    
-    if sort_by == "Time":
-        sorted_meds.sort(key=lambda x: x.get('time', '00:00'))
-    elif sort_by == "Name":
-        sorted_meds.sort(key=lambda x: x.get('name', ''))
-    elif sort_by == "Type":
-        sorted_meds.sort(key=lambda x: x.get('dosageType', ''))
-    elif sort_by == "Status":
-        sorted_meds.sort(key=lambda x: x.get('taken_today', False), reverse=True)
-    
-    if filter_by == "Taken":
-        sorted_meds = [m for m in sorted_meds if m.get('taken_today', False)]
-    elif filter_by == "Pending":
-        sorted_meds = [m for m in sorted_meds if not m.get('taken_today', False)]
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    
-    if sorted_meds:
-        missed, upcoming, taken = categorize_medications_by_status(sorted_meds)
-        
-        if missed:
-            st.markdown("<div class='section-header section-missed'>❌ Missed Medications</div>", unsafe_allow_html=True)
-            for med in missed:
-                color_hex = get_medication_color_hex(med.get('color', 'blue'))
-                st.markdown(f"""
-                <div class='checklist-item missed'>
-                    <div style='display: flex; align-items: center; flex: 1;'>
-                        <div class='color-dot' style='background-color: {color_hex};'></div>
-                        <div>
-                            <strong>{med['name']}</strong> ({med['dosageAmount']})
-                            <br><small>⏰ Scheduled: {format_time(med.get('time', 'N/A'))} | {med.get('frequency', '').replace('-', ' ').title()}</small>
-                            {f'<br><small>📝 {med.get("instructions", "")}</small>' if med.get('instructions') else ''}
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                col1, col2, col3 = st.columns([3, 1, 1])
-                with col2:
-                    if st.button("✓ Take", key=f"take_med_missed_{med['id']}", use_container_width=True):
-                        for m in st.session_state.medications:
-                            if m['id'] == med['id']:
-                                m['taken_today'] = True
-                                update_medication_history(med['id'], 'taken')
-                                play_notification_sound()
-                                update_adherence_history()
-                                save_user_data()
-                                
-                                new_adherence = calculate_adherence(st.session_state.medications)
-                                if new_adherence >= 100 and st.session_state.previous_adherence < 100:
-                                    st.session_state.previous_adherence = new_adherence
-                                    show_100_percent_adherence_animation()
-                                st.rerun()
-                with col3:
-                    if st.button("✏️", key=f"edit_missed_{med['id']}", help="Edit"):
-                        st.session_state.editing_medication = med
-                        st.rerun()
-                    
-                    if st.button("🗑️", key=f"delete_missed_{med['id']}", help="Delete"):
-                        st.session_state.medications = [m for m in st.session_state.medications if m['id'] != med['id']]
-                        save_user_data()
-                        st.rerun()
-                
-                st.markdown("<br>", unsafe_allow_html=True)
-        
-        if upcoming:
-            st.markdown("<div class='section-header section-upcoming'>⏰ Upcoming Medications</div>", unsafe_allow_html=True)
-            for med in upcoming:
-                color_hex = get_medication_color_hex(med.get('color', 'blue'))
-                st.markdown(f"""
-                <div class='checklist-item upcoming'>
-                    <div style='display: flex; align-items: center; flex: 1;'>
-                        <div class='color-dot' style='background-color: {color_hex};'></div>
-                        <div>
-                            <strong>{med['name']}</strong> ({med['dosageAmount']})
-                            <br><small>⏰ Scheduled: {format_time(med.get('time', 'N/A'))} | {med.get('frequency', '').replace('-', ' ').title()}</small>
-                            {f'<br><small>📝 {med.get("instructions", "")}</small>' if med.get('instructions') else ''}
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                col1, col2, col3 = st.columns([3, 1, 1])
-                with col2:
-                    if st.button("✓ Take", key=f"take_med_upcoming_{med['id']}", use_container_width=True):
-                        for m in st.session_state.medications:
-                            if m['id'] == med['id']:
-                                m['taken_today'] = True
-                                update_medication_history(med['id'], 'taken')
-                                play_notification_sound()
-                                update_adherence_history()
-                                save_user_data()
-                                
-                                new_adherence = calculate_adherence(st.session_state.medications)
-                                if new_adherence >= 100 and st.session_state.previous_adherence < 100:
-                                    st.session_state.previous_adherence = new_adherence
-                                    show_100_percent_adherence_animation()
-                                st.rerun()
-                with col3:
-                    if st.button("✏️", key=f"edit_upcoming_{med['id']}", help="Edit"):
-                        st.session_state.editing_medication = med
-                        st.rerun()
-                    
-                    if st.button("🗑️", key=f"delete_upcoming_{med['id']}", help="Delete"):
-                        st.session_state.medications = [m for m in st.session_state.medications if m['id'] != med['id']]
-                        save_user_data()
-                        st.rerun()
-                
-                st.markdown("<br>", unsafe_allow_html=True)
-        
-        if taken:
-            st.markdown("<div class='section-header section-taken'>✅ Taken Medications</div>", unsafe_allow_html=True)
-            for med in taken:
-                color_hex = get_medication_color_hex(med.get('color', 'blue'))
-                st.markdown(f"""
-                <div class='checklist-item taken'>
-                    <div style='display: flex; align-items: center; flex: 1;'>
-                        <div class='color-dot' style='background-color: {color_hex};'></div>
-                        <div>
-                            <strong>{med['name']}</strong> ({med['dosageAmount']})
-                            <br><small>⏰ Taken at: {format_time(med.get('time', 'N/A'))} | {med.get('frequency', '').replace('-', ' ').title()}</small>
-                            {f'<br><small>📝 {med.get("instructions", "")}</small>' if med.get('instructions') else ''}
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                col1, col2, col3 = st.columns([3, 1, 1])
-                with col2:
-                    if st.button("↩️ Undo", key=f"undo_med_{med['id']}", use_container_width=True):
-                        for m in st.session_state.medications:
-                            if m['id'] == med['id']:
-                                m['taken_today'] = False
-                                if 'taken_times' in m:
-                                    m['taken_times'] = []
-                                update_adherence_history()
-                                save_user_data()
-                                st.rerun()
-                with col3:
-                    if st.button("✏️", key=f"edit_taken_{med['id']}", help="Edit"):
-                        st.session_state.editing_medication = med
-                        st.rerun()
-                    
-                    if st.button("🗑️", key=f"delete_taken_{med['id']}", help="Delete"):
-                        st.session_state.medications = [m for m in st.session_state.medications if m['id'] != med['id']]
-                        save_user_data()
-                        st.rerun()
-                
-                st.markdown("<br>", unsafe_allow_html=True)
-    else:
-        st.info("No medications found. Add your first medication above!")
+    # NEW: Use the tabbed checklist here too
+    display_medication_checklist_with_tabs(st.session_state.medications, 'adult')
 
 def appointments_tab():
     """Appointments tab content"""
@@ -3008,7 +3133,7 @@ def patient_dashboard_page():
         mascot_img = get_mascot_image(st.session_state.turtle_mood)
         st.markdown(f"""
         <div class="turtle-container" style="text-align:center;">
-            <img src="{mascot_img}" width="120">
+            <div style="font-size: 120px;">{mascot_img}</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -3232,3 +3357,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
