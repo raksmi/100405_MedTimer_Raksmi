@@ -1918,7 +1918,8 @@ def dashboard_overview_tab(age_category):
         
         for med in due_meds:
             dose_time = med.get('time', '00:00')
-            med_key = f"due_{med['id']}_{dose_time.replace(':', '')}"
+            med_key = f"take_{med['id']}_{dose_time}_{'missed' if is_missed else 'upcoming'}"
+
             
             st.markdown(
                 f"""
@@ -1930,7 +1931,7 @@ def dashboard_overview_tab(age_category):
                 unsafe_allow_html=True
             )
             
-            if st.button("✓ Take Now", key=med_key, use_container_width=True):
+            if st.button("✓ Take Now", key=f"take_{med['id']}_{med['time']}_{'missed' if is_missed else 'upcoming'}, use_container_width=True):
                 for m in st.session_state.medications:
                     if m['id'] == med['id']:
                         if dose_time not in m.get('taken_times', []):
@@ -2935,6 +2936,8 @@ def main():
 
 if __name__ == "__main__":
     main()s
+
+
 
 
 
