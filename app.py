@@ -461,7 +461,7 @@ def calculate_adherence(medications):
 
 def get_mascot_image(mood):
     mascot_images = {
-        'happy': r"C:\Users\tnvxx\OneDrive\Desktop\sucess.png",
+        'happy': r"assets\mascot\sucess.png",
         'excited': r"C:\Users\tnvxx\OneDrive\Desktop\sucess.png",
         'neutral': '🐢',
         'worried': '🐢'
@@ -3074,3 +3074,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
