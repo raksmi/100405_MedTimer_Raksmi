@@ -2582,7 +2582,7 @@ def medications_tab():
             
             with col1:
                 st.markdown(f"### {med['name']}")
-                st markdown(f"**Dosage:** {med['dosageAmount']} | **Type:** {med['dosageType'].capitalize()}")
+                st.markdown(f"**Dosage:** {med['dosageAmount']} | **Type:** {med['dosageType'].capitalize()}")
                 st.markdown(f"**Time:** {med['time']} | **Frequency:** {med['frequency'].replace('-', ' ').title()}")
                 if med.get('reminder_times'):
                     st.markdown(f"**Schedule Times:** {', '.join(med['reminder_times'])}")
