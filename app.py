@@ -61,9 +61,6 @@ def init_database():
                   instructions TEXT,
                   taken_today INTEGER,
                   created_at TEXT,
-                  reminder_times TEXT,
-                  taken_time_slots TEXT,
-                  last_taken_date TEXT,
                   FOREIGN KEY(username) REFERENCES users(username))''')
     
     c.execute('''CREATE TABLE IF NOT EXISTS appointments
@@ -240,7 +237,6 @@ def categorize_medications_by_status():
     """Categorize medications into missed, upcoming, and taken"""
     now = datetime.now()
     current_time = now.strftime("%H:%M")
-    today = now.strftime("%Y-%m-%d")
     
     missed = []
     upcoming = []
@@ -249,19 +245,13 @@ def categorize_medications_by_status():
     for med in st.session_state.medications:
         med_time = med.get('time', '00:00')
         
-        # Get today's taken time slots
-        taken_time_slots = med.get('taken_time_slots_today', [])
-        last_taken_date = med.get('last_taken_date', '')
+        # Track which time slots have been taken
+        taken_time_slots = med.get('taken_time_slots', [])
         
-        # If it's a new day, reset the taken status for display purposes
-        if last_taken_date != today:
-            taken_time_slots = []
-        
-        # Track which time slots have been taken today
         if med.get('reminder_times'):
             for time_slot in med['reminder_times']:
                 if time_slot in taken_time_slots:
-                    # This specific time slot has been taken today
+                    # This specific time slot has been taken
                     continue
                 elif time_slot < current_time:
                     # Missed this time slot
@@ -287,12 +277,10 @@ def categorize_medications_by_status():
                         })
         
         # Handle the main medication time
-        med_taken_today = (last_taken_date == today) and (med_time in taken_time_slots)
-        
-        if med_taken_today:
+        if med.get('taken_today', False):
             taken.append(med)
         elif med_time < current_time and med_time not in taken_time_slots:
-            # Missed main time and not taken yet today
+            # Missed main time and not taken yet
             if not any(m['id'] == med['id'] and m['time'] == med_time for m in missed):
                 missed.append({
                     'id': med['id'],
@@ -303,7 +291,7 @@ def categorize_medications_by_status():
                     'unique_key': f"{med['id']}_{med_time.replace(':', '')}"
                 })
         elif med_time > current_time and med_time not in taken_time_slots:
-            # Upcoming main time and not taken yet today
+            # Upcoming main time and not taken yet
             if not any(m['id'] == med['id'] and m['time'] == med_time for m in upcoming):
                 upcoming.append({
                     'id': med['id'],
@@ -426,21 +414,14 @@ def check_due_medications(medications):
     """Check for medications that are due now and trigger reminders"""
     now = datetime.now()
     current_time = now.strftime("%H:%M")
-    today = now.strftime("%Y-%m-%d")
     
     due_medications = []
     for med in medications:
-        taken_time_slots_today = med.get('taken_time_slots_today', [])
-        last_taken_date = med.get('last_taken_date', '')
-        
-        # Reset for new day
-        if last_taken_date != today:
-            taken_time_slots_today = []
-        
+        taken_time_slots = med.get('taken_time_slots', [])
         med_time = med.get('time', '00:00')
         
         # Check main medication time
-        if med_time not in taken_time_slots_today:
+        if med_time not in taken_time_slots:
             med_datetime = datetime.strptime(med_time, "%H:%M").replace(
                 year=now.year, month=now.month, day=now.day
             )
@@ -452,7 +433,7 @@ def check_due_medications(medications):
         # Check reminder times
         if med.get('reminder_times'):
             for reminder_time in med['reminder_times']:
-                if reminder_time not in taken_time_slots_today:
+                if reminder_time not in taken_time_slots:
                     reminder_datetime = datetime.strptime(reminder_time, "%H:%M").replace(
                         year=now.year, month=now.month, day=now.day
                     )
@@ -465,35 +446,12 @@ def check_due_medications(medications):
     return due_medications
 
 def calculate_adherence(medications):
-    """Calculate medication adherence percentage for today"""
+    """Calculate medication adherence percentage"""
     if not medications:
         return 0
-    
-    now = datetime.now()
-    today = now.strftime("%Y-%m-%d")
-    current_time = now.strftime("%H:%M")
-    
-    taken_count = 0
-    total_count = 0
-    
-    for med in medications:
-        med_time = med.get('time', '00:00')
-        taken_time_slots_today = med.get('taken_time_slots_today', [])
-        last_taken_date = med.get('last_taken_date', '')
-        
-        # Reset for new day
-        if last_taken_date != today:
-            taken_time_slots_today = []
-        
-        # Count this medication if it's due by now
-        if med_time <= current_time:
-            total_count += 1
-            
-            # Check if it's taken today
-            if last_taken_date == today and med_time in taken_time_slots_today:
-                taken_count += 1
-    
-    return (taken_count / total_count * 100) if total_count > 0 else 0
+    taken = sum(1 for med in medications if med.get('taken_today', False))
+    total = len(medications)
+    return (taken / total * 100) if total > 0 else 0
 
 def get_mascot_image(mood):
     mascot_images = {
@@ -607,26 +565,11 @@ def initialize_session_state():
         st.session_state.undo_stack = []
     if 'last_action' not in st.session_state:
         st.session_state.last_action = None
-    if 'current_date' not in st.session_state:
-        st.session_state.current_date = datetime.now().strftime("%Y-%m-%d")
-
-def check_and_reset_daily_state():
-    """Check if it's a new day and reset daily states if needed"""
-    today = datetime.now().strftime("%Y-%m-%d")
     
-    if st.session_state.get('current_date') != today:
-        # It's a new day, reset daily states
-        st.session_state.current_date = today
-        
-        for med in st.session_state.medications:
-            # Reset daily tracking for new day
-            med['taken_time_slots_today'] = []
-            med['last_taken_date'] = ''
-        
-        # Save the reset state
-        save_user_data()
-        return True
-    return False
+    # NEW: Initialize taken_time_slots for all existing medications
+    for med in st.session_state.medications:
+        if 'taken_time_slots' not in med:
+            med['taken_time_slots'] = []
 
 def save_user_data():
     """Save user data to SQLite database"""
@@ -661,19 +604,16 @@ def save_user_data():
         
         c.execute('DELETE FROM medications WHERE username = ?', (username,))
         for med in st.session_state.medications:
-            # Serialize reminder_times and taken_time_slots_today to JSON strings for storage
-            reminder_times_json = json.dumps(med.get('reminder_times', []))
-            taken_time_slots_json = json.dumps(med.get('taken_time_slots_today', []))
+            # Serialize taken_time_slots to JSON string for storage
+            taken_slots_json = json.dumps(med.get('taken_time_slots', []))
             
             c.execute('''INSERT INTO medications 
-                         (username, name, dosage_type, dosage_amount, frequency, time, color, instructions, taken_today, created_at, reminder_times, taken_time_slots, last_taken_date)
-                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                         (username, name, dosage_type, dosage_amount, frequency, time, color, instructions, taken_today, created_at)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                      (username, med.get('name'), med.get('dosageType'), med.get('dosageAmount'),
                       med.get('frequency'), med.get('time'), med.get('color'),
-                      med.get('instructions', ''), 0,  # Always store 0 for taken_today (we use date-based tracking)
-                      med.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-                      reminder_times_json, taken_time_slots_json,
-                      med.get('last_taken_date', '')))
+                      med.get('instructions', ''), int(med.get('taken_today', False)),
+                      med.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
         
         c.execute('DELETE FROM appointments WHERE username = ?', (username,))
         for appt in st.session_state.appointments:
@@ -740,35 +680,8 @@ def load_user_data(username):
         c.execute('SELECT * FROM medications WHERE username = ?', (username,))
         meds = c.fetchall()
         st.session_state.medications = []
-        today = datetime.now().strftime("%Y-%m-%d")
-        
         for med in meds:
-            # Parse JSON strings from database
-            reminder_times = []
-            taken_time_slots = []
-            last_taken_date = ''
-            
-            try:
-                if med[11]:  # reminder_times column
-                    reminder_times = json.loads(med[11])
-            except:
-                pass
-            
-            try:
-                if med[12]:  # taken_time_slots column
-                    taken_time_slots = json.loads(med[12])
-            except:
-                pass
-            
-            if med[13]:  # last_taken_date column
-                last_taken_date = med[13]
-            
-            # Check if it's a new day and reset taken_time_slots_today
-            if last_taken_date != today:
-                taken_time_slots_today = []
-            else:
-                taken_time_slots_today = taken_time_slots.copy()
-            
+            # Initialize taken_time_slots as empty list for loaded medications
             med_obj = {
                 'id': med[0],
                 'name': med[2],
@@ -778,12 +691,9 @@ def load_user_data(username):
                 'time': med[6],
                 'color': med[7],
                 'instructions': med[8],
-                'taken_today': False,  # Always reset to False - we use date-based tracking
+                'taken_today': bool(med[9]),
                 'created_at': med[10],
-                'reminder_times': reminder_times,
-                'taken_time_slots': taken_time_slots,  # Keep for historical reference
-                'taken_time_slots_today': taken_time_slots_today,  # Today's taken slots
-                'last_taken_date': last_taken_date
+                'taken_time_slots': []  # Initialize empty taken_time_slots
             }
             st.session_state.medications.append(med_obj)
         
@@ -879,7 +789,12 @@ def update_adherence_history():
     username = st.session_state.user_profile['username']
     today = datetime.now().strftime("%Y-%m-%d")
     
-    adherence = calculate_adherence(st.session_state.medications)
+    if st.session_state.medications:
+        taken = sum(1 for med in st.session_state.medications if med.get('taken_today', False))
+        total = len(st.session_state.medications)
+        adherence = (taken / total * 100) if total > 0 else 0
+    else:
+        adherence = 0
     
     conn = get_db_connection()
     c = conn.cursor()
@@ -913,7 +828,6 @@ def clear_session_data():
     st.session_state.editing_medication = None
     st.session_state.undo_stack = []
     st.session_state.last_action = None
-    st.session_state.current_date = datetime.now().strftime("%Y-%m-%d")
 
 def push_undo_state(action_type, data):
     """Push state to undo stack"""
@@ -934,19 +848,9 @@ def undo_last_action():
     
     if last_action['action_type'] == 'medication_taken':
         med_id = last_action['data']['med_id']
-        time_slot = last_action['data'].get('time', '')
-        today = datetime.now().strftime("%Y-%m-%d")
-        
         for med in st.session_state.medications:
             if med['id'] == med_id:
-                # Remove from taken_time_slots_today
-                if 'taken_time_slots_today' in med and time_slot in med['taken_time_slots_today']:
-                    med['taken_time_slots_today'].remove(time_slot)
-                
-                # Reset last_taken_date if no more slots taken today
-                if not med.get('taken_time_slots_today', []):
-                    med['last_taken_date'] = ''
-                
+                med['taken_today'] = False
                 update_medication_history(med_id, 'untaken')
                 update_adherence_history()
                 save_user_data()
@@ -987,17 +891,9 @@ def show_undo_button():
     """Show undo button if there are actions to undo"""
     if st.session_state.undo_stack:
         last_action = st.session_state.undo_stack[-1]
-        action_descriptions = {
-            'medication_taken': f"Undo taking {last_action['data'].get('med_name', 'medication')}",
-            'medication_added': "Undo adding medication",
-            'medication_deleted': f"Undo deleting {last_action['data']['medication']['name']}",
-            'appointment_added': "Undo adding appointment",
-            'appointment_deleted': f"Undo deleting appointment"
-        }
-        
         col1, col2 = st.columns([4, 1])
         with col2:
-            if st.button(f"↩️ Undo", key="undo_btn", help=action_descriptions.get(last_action['action_type'], 'Undo last action'), use_container_width=True):
+            if st.button("↩️ Undo", key="undo_btn", use_container_width=True):
                 if undo_last_action():
                     st.success(st.session_state.last_action)
                     st.rerun()
@@ -1421,38 +1317,8 @@ def create_medication_status_donut(medications):
         fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
         return fig
     
-    now = datetime.now()
-    today = now.strftime("%Y-%m-%d")
-    current_time = now.strftime("%H:%M")
-    
-    taken = 0
-    pending = 0
-    
-    for med in medications:
-        med_time = med.get('time', '00:00')
-        taken_time_slots_today = med.get('taken_time_slots_today', [])
-        last_taken_date = med.get('last_taken_date', '')
-        
-        # Reset for new day
-        if last_taken_date != today:
-            taken_time_slots_today = []
-        
-        # Only count medications that are due by now
-        if med_time <= current_time:
-            if last_taken_date == today and med_time in taken_time_slots_today:
-                taken += 1
-            else:
-                pending += 1
-    
-    if taken == 0 and pending == 0:
-        fig = go.Figure()
-        fig.add_annotation(
-            text="No medications due yet.<br>Check back later!",
-            xref="paper", yref="paper", x=0.5, y=0.5, showarrow=False,
-            font=dict(size=16, color="#6b7280")
-        )
-        fig.update_layout(height=400, plot_bgcolor='white', paper_bgcolor='white')
-        return fig
+    taken = sum(1 for med in medications if med.get('taken_today', False))
+    pending = len(medications) - taken
     
     labels = ['Taken ✅', 'Pending ⏰']
     values = [taken, pending]
@@ -1466,7 +1332,7 @@ def create_medication_status_donut(medications):
     )])
     
     fig.add_annotation(
-        text=f"{(taken/(taken+pending)*100):.0f}%<br>Complete",
+        text=f"{(taken/len(medications)*100):.0f}%<br>Complete",
         x=0.5, y=0.5, font=dict(size=24, color='#1f2937', family='Arial Black'),
         showarrow=False
     )
@@ -1561,15 +1427,7 @@ def generate_pdf_report(report_data, report_type="Complete Health Report"):
     if medications:
         med_data = [['Name', 'Dosage', 'Type', 'Frequency', 'Time', 'Status']]
         for med in medications:
-            taken_time_slots_today = med.get('taken_time_slots_today', [])
-            last_taken_date = med.get('last_taken_date', '')
-            today = datetime.now().strftime("%Y-%m-%d")
-            
-            if last_taken_date == today and med['time'] in taken_time_slots_today:
-                status = "Taken"
-            else:
-                status = "Pending"
-            
+            status = "Taken" if med.get('taken_today', False) else "Pending"
             med_data.append([
                 med.get('name', 'N/A'),
                 med.get('dosageAmount', 'N/A'),
@@ -1716,8 +1574,6 @@ def patient_login_page():
             if st.button("✨ Sign In", use_container_width=True):
                 if username and password:
                     if load_user_data(username):
-                        # Check and reset daily state on login
-                        check_and_reset_daily_state()
                         st.success(f"Welcome back, {st.session_state.user_profile['name']}!")
                         st.session_state.page = 'patient_dashboard'
                         st.rerun()
@@ -1800,7 +1656,7 @@ def caregiver_login_page():
             st.session_state.page = 'caregiver_signup'
             st.rerun()
         
-        st.markdown("</div>", unsafeallow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 def patient_signup_page():
     """Multi-step patient signup page"""
@@ -1948,9 +1804,7 @@ def patient_signup_page():
                         'frequency': frequency.lower().replace(' ', '-'),
                         'time': reminder_times_input[0] if reminder_times_input else '09:00',
                         'color': color.lower(),
-                        'taken_today': False,
-                        'taken_time_slots_today': [],
-                        'last_taken_date': ''
+                        'taken_today': False
                     }
                     
                     if len(reminder_times_input) > 1:
@@ -2099,53 +1953,6 @@ def display_datetime_header():
     
     # REMOVED: time.sleep(0.1) and st.rerun() - This was causing the infinite loop
 
-def calculate_medication_taken_status(med):
-    """Helper function to check if a medication is taken today"""
-    today = datetime.now().strftime("%Y-%m-%d")
-    med_time = med.get('time', '00:00')
-    taken_time_slots_today = med.get('taken_time_slots_today', [])
-    last_taken_date = med.get('last_taken_date', '')
-    
-    return (last_taken_date == today) and (med_time in taken_time_slots_today)
-
-def mark_medication_as_taken(med, time_slot=None):
-    """Mark a medication as taken at a specific time slot"""
-    if 'taken_time_slots_today' not in med:
-        med['taken_time_slots_today'] = []
-    
-    # Use provided time_slot or default to main time
-    if time_slot is None:
-        time_slot = med.get('time', '00:00')
-    
-    today = datetime.now().strftime("%Y-%m-%d")
-    
-    # Add time slot if not already taken
-    if time_slot not in med['taken_time_slots_today']:
-        med['taken_time_slots_today'].append(time_slot)
-    
-    # Update last_taken_date
-    med['last_taken_date'] = today
-    
-    # Push to undo stack
-    push_undo_state('medication_taken', {
-        'med_id': med['id'],
-        'med_name': med['name'],
-        'time': time_slot
-    })
-    
-    # Update history and save
-    update_medication_history(med['id'], 'taken')
-    update_adherence_history()
-    save_user_data()
-
-def mark_medication_as_taken_by_id(med_id, time_slot=None):
-    """Mark a medication as taken by its ID"""
-    for med in st.session_state.medications:
-        if med['id'] == med_id:
-            mark_medication_as_taken(med, time_slot)
-            return True
-    return False
-
 def dashboard_overview_tab(age_category):
     """Dashboard overview with stats and today's schedule"""
     st.markdown("<h3 style='color: #ffffff;'>📊 Your Health Overview</h3>", unsafe_allow_html=True)
@@ -2158,7 +1965,7 @@ def dashboard_overview_tab(age_category):
     col1, col2, col3, col4 = st.columns(4)
     
     total_meds = len(st.session_state.medications)
-    taken_today = sum(1 for med in st.session_state.medications if calculate_medication_taken_status(med))
+    taken_today = sum(1 for med in st.session_state.medications if med.get('taken_today', False))
     total_appointments = len(st.session_state.appointments)
     adherence = calculate_adherence(st.session_state.medications)
     
@@ -2199,7 +2006,6 @@ def dashboard_overview_tab(age_category):
     
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Show undo button
     show_undo_button()
     
     time_of_day = get_time_of_day().lower().replace('👋 ', '')
@@ -2209,7 +2015,7 @@ def dashboard_overview_tab(age_category):
     st.markdown(
         f"""
         <div style="background: #f06060; border-radius: 16px; padding: 20px; box-shadow: 0 6px 12px rgba(0,0,0,0.12); text-align: center;">
-            <div style="font-size: 48px; medication-bottom: 10px;">{mascot_img}</div>
+            <div style="font-size: 48px; margin-bottom: 10px;">{mascot_img}</div>
             <p style="font-size: 18px; color: #000000 !important;">
                 {mascot_message}
             </p>
@@ -2239,12 +2045,12 @@ def dashboard_overview_tab(age_category):
             
             # Check if any reminder time is due
             if med.get('reminder_times'):
-                taken_time_slots_today = med.get('taken_time_slots_today', [])
+                taken_time_slots = med.get('taken_time_slots', [])
                 now = datetime.now()
                 current_time = now.strftime("%H:%M")
                 
                 for reminder_time in med['reminder_times']:
-                    if reminder_time not in taken_time_slots_today:
+                    if reminder_time not in taken_time_slots:
                         reminder_datetime = datetime.strptime(reminder_time, "%H:%M").replace(
                             year=now.year, month=now.month, day=now.day
                         )
@@ -2261,8 +2067,35 @@ def dashboard_overview_tab(age_category):
             """, unsafe_allow_html=True)
             
             if st.button("✓ Take Now", key=f"take_due_{med['id']}_{med_time.replace(':', '')}", use_container_width=True):
-                mark_medication_as_taken(med, med_time)
-                st.rerun()
+                for m in st.session_state.medications:
+                    if m['id'] == med['id']:
+                        # Initialize taken_time_slots if not exists
+                        if 'taken_time_slots' not in m:
+                            m['taken_time_slots'] = []
+                        
+                        # Mark this specific time slot as taken
+                        if med_time not in m['taken_time_slots']:
+                            m['taken_time_slots'].append(med_time)
+                        
+                        # Mark medication as taken if all time slots are taken
+                        all_slots_taken = True
+                        if m.get('reminder_times'):
+                            for slot in m['reminder_times']:
+                                if slot not in m.get('taken_time_slots', []):
+                                    all_slots_taken = False
+                                    break
+                        
+                        # If no reminder times, or main time just taken
+                        if not m.get('reminder_times'):
+                            all_slots_taken = True
+                        
+                        m['taken_today'] = all_slots_taken
+                        
+                        update_medication_history(m['id'], 'taken')
+                        update_adherence_history()
+                        push_undo_state('medication_taken', {'med_id': med['id'], 'med_name': med['name'], 'time': med_time})
+                        save_user_data()
+                        st.rerun()
     else:
         st.info("No medications due right now.")
     
@@ -2323,7 +2156,39 @@ def dashboard_overview_tab(age_category):
                 with col2:
                     unique_key = med.get('unique_key', f"missed_{med['id']}")
                     if st.button("✓ Take Now", key=f"take_missed_{unique_key}", use_container_width=True):
-                        mark_medication_as_taken_by_id(med['id'], med['time'])
+                        for m in st.session_state.medications:
+                            if m['id'] == med['id']:
+                                # Initialize taken_time_slots if not exists
+                                if 'taken_time_slots' not in m:
+                                    m['taken_time_slots'] = []
+                                
+                                # Mark this specific time slot as taken
+                                missed_time = med['time']
+                                if missed_time not in m['taken_time_slots']:
+                                    m['taken_time_slots'].append(missed_time)
+                                
+                                # Check if all time slots are now taken
+                                all_slots_taken = True
+                                if m.get('reminder_times'):
+                                    for slot in m['reminder_times']:
+                                        if slot not in m.get('taken_time_slots', []):
+                                            all_slots_taken = False
+                                            break
+                                
+                                # If no reminder times, or main time just taken
+                                if not m.get('reminder_times'):
+                                    all_slots_taken = True
+                                
+                                # Also check main time
+                                if m.get('time') in m['taken_time_slots']:
+                                    all_slots_taken = True
+                                
+                                m['taken_today'] = all_slots_taken
+                                
+                                update_medication_history(m['id'], 'taken')
+                                push_undo_state('medication_taken', {'med_id': med['id'], 'med_name': med['name'], 'time': missed_time})
+                        update_adherence_history()
+                        save_user_data()
                         st.rerun()
                 st.markdown("", unsafe_allow_html=True)
         
@@ -2348,7 +2213,40 @@ def dashboard_overview_tab(age_category):
                 with col2:
                     unique_key = med.get('unique_key', f"upcoming_{med['id']}")
                     if st.button("\u2713 Take Now", key=f"take_upcoming_{unique_key}", use_container_width=True):
-                        mark_medication_as_taken_by_id(med['id'], med['time'])
+                        for m in st.session_state.medications:
+                            if m['id'] == med['id']:
+                                # Initialize taken_time_slots if not exists
+                                if 'taken_time_slots' not in m:
+                                    m['taken_time_slots'] = []
+                                
+                                # Mark this specific time slot as taken
+                                upcoming_time = med['time']
+                                if upcoming_time not in m['taken_time_slots']:
+                                    m['taken_time_slots'].append(upcoming_time)
+                                
+                                # Check if all time slots are now taken
+                                all_slots_taken = True
+                                if m.get('reminder_times'):
+                                    for slot in m['reminder_times']:
+                                        if slot not in m.get('taken_time_slots', []):
+                                            all_slots_taken = False
+                                            break
+                                
+                                # If no reminder times, or main time just taken
+                                if not m.get('reminder_times'):
+                                    all_slots_taken = True
+                                
+                                # Also check main time
+                                if m.get('time') in m['taken_time_slots']:
+                                    all_slots_taken = True
+                                
+                                m['taken_today'] = all_slots_taken
+                                
+                                update_medication_history(m['id'], 'taken')
+                                play_notification_sound()
+                                push_undo_state('medication_taken', {'med_id': med['id'], 'med_name': med['name'], 'time': upcoming_time})
+                        update_adherence_history()
+                        save_user_data()
                         st.rerun()
                 st.markdown("", unsafe_allow_html=True)
         
@@ -2526,9 +2424,7 @@ def medications_tab():
                     'color': new_color.lower(),
                     'instructions': new_instructions,
                     'taken_today': False,
-                    'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'taken_time_slots_today': [],
-                    'last_taken_date': ''
+                    'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
                 
                 if len(reminder_times_input) > 1:
@@ -2563,12 +2459,12 @@ def medications_tab():
     elif sort_by == "Type":
         sorted_meds.sort(key=lambda x: x.get('dosageType', ''))
     elif sort_by == "Status":
-        sorted_meds.sort(key=lambda x: calculate_medication_taken_status(x), reverse=True)
+        sorted_meds.sort(key=lambda x: x.get('taken_today', False), reverse=True)
     
     if filter_by == "Taken":
-        sorted_meds = [m for m in sorted_meds if calculate_medication_taken_status(m)]
+        sorted_meds = [m for m in sorted_meds if m.get('taken_today', False)]
     elif filter_by == "Pending":
-        sorted_meds = [m for m in sorted_meds if not calculate_medication_taken_status(m)]
+        sorted_meds = [m for m in sorted_meds if not m.get('taken_today', False)]
     
     st.markdown("<br>", unsafe_allow_html=True)
     
@@ -2590,7 +2486,7 @@ def medications_tab():
                     st.markdown(f"**Instructions:** {med['instructions']}")
             
             with col2:
-                status = "Taken ✅" if calculate_medication_taken_status(med) else "Pending ⏰"
+                status = "Taken ✅" if med.get('taken_today', False) else "Pending ⏰"
                 st.markdown(f"**Status:** {status}")
                 st.markdown(
                     f"<div style='width: 40px; height: 40px; background-color: {color_hex}; "
@@ -2609,10 +2505,31 @@ def medications_tab():
                     save_user_data()
                     st.rerun()
                 
-                if not calculate_medication_taken_status(med):
+                if not med.get('taken_today', False):
                     if st.button("✓ Take", key=f"take_med_{med['id']}", use_container_width=True):
-                        mark_medication_as_taken(med)
+                        # Initialize taken_time_slots if not exists
+                        if 'taken_time_slots' not in med:
+                            med['taken_time_slots'] = []
+                        
+                        # Mark the main time as taken
+                        med_time = med.get('time', '00:00')
+                        if med_time not in med['taken_time_slots']:
+                            med['taken_time_slots'].append(med_time)
+                        
+                        # Mark all reminder times as taken as well (user is taking the medication)
+                        if med.get('reminder_times'):
+                            for slot in med['reminder_times']:
+                                if slot not in med['taken_time_slots']:
+                                    med['taken_time_slots'].append(slot)
+                        
+                        # Mark medication as taken
+                        med['taken_today'] = True
+                        
                         play_notification_sound()
+                        update_medication_history(med['id'], 'taken')
+                        update_adherence_history()
+                        push_undo_state('medication_taken', {'med_id': med['id'], 'med_name': med['name'], 'time': med_time})
+                        save_user_data()
                         st.rerun()
             
             st.markdown("</div>", unsafe_allow_html=True)
@@ -2878,7 +2795,7 @@ def achievements_tab():
         {'id': 'med_master', 'name': 'Med Master', 'description': 'Added 5 or more medications',
          'icon': '🎓', 'earned': len(st.session_state.medications) >= 5, 'category': 'Medications'},
         {'id': 'perfect_day', 'name': 'Perfect Day', 'description': 'Took all medications on time today',
-         'icon': '⭐', 'earned': all(calculate_medication_taken_status(m) for m in st.session_state.medications) if st.session_state.medications else False,
+         'icon': '⭐', 'earned': all(m.get('taken_today', False) for m in st.session_state.medications) if st.session_state.medications else False,
          'category': 'Adherence'},
         {'id': 'health_tracker', 'name': 'Health Tracker', 'description': 'Scheduled 3 doctor appointments',
          'icon': '📅', 'earned': len(st.session_state.appointments) >= 3, 'category': 'Appointments'},
@@ -2891,7 +2808,7 @@ def achievements_tab():
         {'id': 'turtle_friend', 'name': 'Turtle\'s Best Friend', 'description': 'Made your turtle companion happy',
          'icon': '🐢', 'earned': st.session_state.turtle_mood in ['happy', 'excited', 'celebrating'], 'category': 'Fun'},
         {'id': 'consistency_king', 'name': 'Consistency King/Queen', 'description': 'Achieve 100% adherence rate',
-         'icon': '👑', 'earned': all(calculate_medication_taken_status(m) for m in st.session_state.medications) and len(st.session_state.medications) > 0,
+         'icon': '👑', 'earned': all(m.get('taken_today', False) for m in st.session_state.medications) and len(st.session_state.medications) > 0,
          'category': 'Adherence'}
     ]
     
@@ -3010,11 +2927,11 @@ MEDICATIONS ({len(st.session_state.medications)})
             if report_format == "CSV":
                 report += "Name,Dosage,Type,Frequency,Time,Status\n"
                 for med in st.session_state.medications:
-                    status = "Taken" if calculate_medication_taken_status(med) else "Pending"
+                    status = "Taken" if med.get('taken_today', False) else "Pending"
                     report += f"{med['name']},{med['dosageAmount']},{med['dosageType']},{med['frequency']},{med['time']},{status}\n"
             else:
                 for i, med in enumerate(st.session_state.medications, 1):
-                    status = "✅ Taken" if calculate_medication_taken_status(med) else "⏰ Pending"
+                    status = "✅ Taken" if med.get('taken_today', False) else "⏰ Pending"
                     report += f"""
 {i}. {med['name']}
    - Dosage: {med['dosageAmount']}
@@ -3084,9 +3001,6 @@ def patient_dashboard_page():
         st.session_state.page = 'patient_login'
         st.rerun()
         return
-    
-    # Check and reset daily state on dashboard load
-    check_and_reset_daily_state()
     
     age = st.session_state.user_profile.get('age', 25)
     age_category = get_age_category(age)
@@ -3329,3 +3243,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
