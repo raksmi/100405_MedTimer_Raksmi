@@ -569,6 +569,15 @@ Adherence % = (Total Doses Taken / Total Doses Scheduled) × 100
 * * *
 
 ## 🎯 Credits
+Created by: M.Raksmi Priyasree (ID: 1000405)
+
+Class: Artificial Intelligence: Python programming – Year 1
+
+Mentor: Syed Ali Beema.S
+
+School: Jain Vidyalaya IB world school, Madurai
+
+NOTE: App's timing is different according to the streamlit's configuration
 
 **Made with ❤️ for better health management**
 
