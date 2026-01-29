@@ -20,6 +20,10 @@
 
 **MedTimer** is a sophisticated, feature-rich medication management application designed to help patients and caregivers track medications, appointments, side effects, and health metrics. Built with Streamlit and SQLite, it provides a beautiful, intuitive interface with real-time notifications, comprehensive analytics, and gamification elements to encourage adherence.
 
+
+Live demo link: https://100405mraksmipriyasreemedtimer-wwrplznergmeukuahbjhpx.streamlit.app/
+
+
 ### Key Highlights:
 
 -   🎨 **Age-Adaptive Interface**: Custom themes based on user age (Youth, Adult, Senior)
@@ -30,6 +34,7 @@
 -   📱 **Responsive Design**: Beautiful, mobile-friendly interface
 -   🔄 **Undo Functionality**: Easily undo medication actions
 -   🎉 **Celebration Effects**: Special animations for perfect adherence
+
 Photos and Flow link: https://drive.google.com/drive/folders/1w-nhn8XTzIXfWgVUTafC9dqBy2XRgb6U?usp=sharing
 * * *
 
